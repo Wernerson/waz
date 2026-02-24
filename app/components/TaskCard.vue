@@ -10,15 +10,11 @@ defineProps<{
   columnTitle: string
 }>()
 
-defineEmits<{
-  (e: 'dragstart', event: DragEvent, taskId: string): void
-}>()
+
 </script>
 
 <template>
   <div
-    draggable="true"
-    @dragstart="$emit('dragstart', $event, task.id)"
     class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 cursor-grab active:cursor-grabbing hover:shadow-md transition-all duration-200 hover:border-emerald-300 dark:hover:border-emerald-600/50 group hover:-translate-y-0.5"
   >
     <div class="flex flex-col gap-3">
