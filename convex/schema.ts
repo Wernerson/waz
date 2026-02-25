@@ -6,4 +6,14 @@ export default defineSchema({
         text: v.string(),
         isCompleted: v.boolean(),
     }),
+    leads: defineTable({
+        title: v.string(),
+        description: v.string(),
+        owner: v.string(),
+        category: v.string(),
+        issue: v.object({
+            year: v.number(),
+            number: v.number(),
+        }),
+    }),
 });
