@@ -40,6 +40,14 @@ useSeoMeta({
         <UColorModeButton />
 
         <UButton
+          to="/leads/new"
+          icon="i-lucide-plus"
+          aria-label="New Lead"
+          color="neutral"
+          variant="ghost"
+        />
+
+        <UButton
           to="https://github.com/nuxt-ui-templates/starter"
           target="_blank"
           icon="i-simple-icons-github"

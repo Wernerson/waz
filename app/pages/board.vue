@@ -29,7 +29,7 @@ const tasksByStatus = ref<Record<Task['status'], Task[]>>({
   ]
 })
 
-const onChange = (event: any, newStatus: string) => {
+const onChange = (event: { added?: { element: Task } }, newStatus: Task['status']) => {
   if (event.added) {
     const task = event.added.element
     task.status = newStatus
