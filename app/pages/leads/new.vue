@@ -33,7 +33,7 @@ const onSubmit = async () => {
       category: state.category || undefined,
       owner: state.owner || undefined
     })
-    router.push('/')
+    router.push('/leads')
   } catch (error) {
     console.error('Failed to create lead:', error)
   }
@@ -95,8 +95,8 @@ const onSubmit = async () => {
             open-on-focus
             class="w-full"
             create-item
-            @create="onCreate"
             size="md"
+            @create="onCreate"
           />
         </UFormField>
 

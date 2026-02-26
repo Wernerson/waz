@@ -34,6 +34,11 @@ useSeoMeta({
         </NuxtLink>
 
         <TemplateMenu />
+
+        <UNavigationMenu
+          :items="[{ label: 'Leads', to: '/leads' }]"
+          variant="ghost"
+        />
       </template>
 
       <template #right>
