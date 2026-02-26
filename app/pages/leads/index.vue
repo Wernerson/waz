@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { api } from '../../convex/_generated/api'
-import type { Doc } from '../../convex/_generated/dataModel'
+import { api } from '../../../convex/_generated/api'
+import type { Doc } from '../../../convex/_generated/dataModel'
 
 interface Section {
   id: string
@@ -57,7 +57,6 @@ const groupedSections = computed<Section[]>(() => {
 </script>
 
 <template>
-  <UMain>
     <UContainer class="py-8">
       <div class="flex justify-between items-end mb-8 pl-1">
         <div>
@@ -148,5 +147,4 @@ const groupedSections = computed<Section[]>(() => {
         </section>
       </div>
     </UContainer>
-  </UMain>
 </template>
