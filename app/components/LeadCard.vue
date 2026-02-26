@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Doc } from '../../convex/_generated/dataModel'
+import type { Doc } from '@@/convex/_generated/dataModel'
 
 defineProps<{
   lead: Doc<'leads'>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { api } from '../../../convex/_generated/api'
-import type { Doc } from '../../../convex/_generated/dataModel'
+import { api } from '@@/convex/_generated/api'
+import type { Doc } from '@@/convex/_generated/dataModel'
 
 interface Section {
   id: string
@@ -8,7 +8,7 @@ interface Section {
   leads: Doc<'leads'>[]
 }
 
-const { data: leads, isPending, error } = useConvexQuery(api.leads.list, {})
+const { data: leads, isPending } = useConvexQuery(api.leads.list, {})
 
 const groupedSections = computed<Section[]>(() => {
   const leadsData = leads.value
@@ -57,94 +57,94 @@ const groupedSections = computed<Section[]>(() => {
 </script>
 
 <template>
-    <UContainer class="py-8">
-      <div class="flex justify-between items-end mb-8 pl-1">
-        <div>
-          <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Leads
-          </h1>
-          <p class="text-slate-500 dark:text-slate-400 mt-1">
-            Browse and manage your leads by issue.
-          </p>
-        </div>
-        <UButton
-          to="/leads/new"
-          icon="i-lucide-plus"
-          label="New Lead"
-          color="primary"
-        />
+  <UContainer class="py-8">
+    <div class="flex justify-between items-end mb-8 pl-1">
+      <div>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+          Leads
+        </h1>
+        <p class="text-slate-500 dark:text-slate-400 mt-1">
+          Browse and manage your leads by issue.
+        </p>
       </div>
+      <UButton
+        to="/leads/new"
+        icon="i-lucide-plus"
+        label="New Lead"
+        color="primary"
+      />
+    </div>
 
-      <div
-        v-if="isPending"
-        class="flex justify-center py-20"
-      >
+    <div
+      v-if="isPending"
+      class="flex justify-center py-20"
+    >
+      <UIcon
+        name="i-lucide-loader-2"
+        class="w-10 h-10 animate-spin text-primary-500"
+      />
+    </div>
+
+    <div
+      v-else-if="groupedSections.length === 0"
+      class="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
+    >
+      <div class="bg-slate-50 dark:bg-slate-900/50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
         <UIcon
-          name="i-lucide-loader-2"
-          class="w-10 h-10 animate-spin text-primary-500"
+          name="i-lucide-inbox"
+          class="w-10 h-10 text-slate-300"
         />
       </div>
-
-      <div
-        v-else-if="groupedSections.length === 0"
-        class="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-3xl"
+      <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">
+        No leads found
+      </h2>
+      <p class="text-slate-500 mb-6">
+        Start by creating your first lead for a specific issue or a general one.
+      </p>
+      <UButton
+        to="/leads/new"
+        icon="i-lucide-plus"
+        size="lg"
       >
-        <div class="bg-slate-50 dark:bg-slate-900/50 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <UIcon
-            name="i-lucide-inbox"
-            class="w-10 h-10 text-slate-300"
+        Create Lead
+      </UButton>
+    </div>
+
+    <div
+      v-else
+      class="flex flex-col gap-12"
+    >
+      <section
+        v-for="section in groupedSections"
+        :key="section.id"
+        class="animate-in fade-in slide-in-from-bottom-2 duration-500"
+      >
+        <div class="flex items-center gap-4 mb-6 sticky top-0 z-10 py-1 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
+          <div class="flex items-center gap-3">
+            <div
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs"
+              :class="section.id === 'new' ? 'bg-primary-500' : 'bg-slate-700 dark:bg-slate-600'"
+            >
+              {{ section.id === 'new' ? 'N' : '#' }}
+            </div>
+            <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white uppercase">
+              {{ section.title }}
+            </h2>
+          </div>
+          <div class="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
+          <span class="text-sm font-semibold text-slate-400 dark:text-slate-500 tabular-nums">
+            {{ section.leads.length }} {{ section.leads.length === 1 ? 'lead' : 'leads' }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <LeadCard
+            v-for="lead in section.leads"
+            :key="lead._id"
+            :lead="lead"
           />
         </div>
-        <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">
-          No leads found
-        </h2>
-        <p class="text-slate-500 mb-6">
-          Start by creating your first lead for a specific issue or a general one.
-        </p>
-        <UButton
-          to="/leads/new"
-          icon="i-lucide-plus"
-          size="lg"
-        >
-          Create Lead
-        </UButton>
-      </div>
-
-      <div
-        v-else
-        class="flex flex-col gap-12"
-      >
-        <section
-          v-for="section in groupedSections"
-          :key="section.id"
-          class="animate-in fade-in slide-in-from-bottom-2 duration-500"
-        >
-          <div class="flex items-center gap-4 mb-6 sticky top-0 z-10 py-1 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
-            <div class="flex items-center gap-3">
-              <div
-                class="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-xs"
-                :class="section.id === 'new' ? 'bg-primary-500' : 'bg-slate-700 dark:bg-slate-600'"
-              >
-                {{ section.id === 'new' ? 'N' : '#' }}
-              </div>
-              <h2 class="text-lg font-bold tracking-tight text-slate-900 dark:text-white uppercase">
-                {{ section.title }}
-              </h2>
-            </div>
-            <div class="h-px flex-1 bg-slate-200 dark:bg-slate-800" />
-            <span class="text-sm font-semibold text-slate-400 dark:text-slate-500 tabular-nums">
-              {{ section.leads.length }} {{ section.leads.length === 1 ? 'lead' : 'leads' }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            <LeadCard
-              v-for="lead in section.leads"
-              :key="lead._id"
-              :lead="lead"
-            />
-          </div>
-        </section>
-      </div>
-    </UContainer>
+      </section>
+    </div>
+  </UContainer>
 </template>
