@@ -23,6 +23,21 @@ useSeoMeta({
   twitterImage: 'https://ui.nuxt.com/assets/templates/nuxt/starter-light.png',
   twitterCard: 'summary_large_image'
 })
+
+const { isOpen, close } = useNewLeadModal()
+
+const onModalSuccess = () => {
+  close()
+  // Optionally navigate to leads if not there
+  const router = useRouter()
+  if (router.currentRoute.value.path !== '/leads') {
+    router.push('/leads')
+  }
+}
+
+const onModalClose = () => {
+  close()
+}
 </script>
 
 <template>
@@ -44,13 +59,27 @@ useSeoMeta({
       <template #right>
         <UColorModeButton />
 
-        <UButton
-          to="/leads/new"
-          icon="i-lucide-plus"
-          aria-label="New Lead"
-          color="neutral"
-          variant="ghost"
-        />
+        <UModal
+          v-model:open="isOpen"
+          title="Create New Lead"
+          description="Fill in the details below to create a new lead."
+        >
+          <UButton
+            icon="i-lucide-plus"
+            aria-label="New Lead"
+            color="neutral"
+            variant="ghost"
+          />
+
+          <template #content>
+            <div class="p-6">
+              <NewLeadForm
+                @success="onModalSuccess"
+                @close="onModalClose"
+              />
+            </div>
+          </template>
+        </UModal>
       </template>
     </UHeader>
 

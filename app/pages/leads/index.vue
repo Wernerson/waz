@@ -9,6 +9,7 @@ interface Section {
 }
 
 const { data: leads, isPending } = useConvexQuery(api.leads.list, {})
+const { open: openNewLeadModal } = useNewLeadModal()
 
 const groupedSections = computed<Section[]>(() => {
   const leadsData = leads.value
@@ -68,10 +69,10 @@ const groupedSections = computed<Section[]>(() => {
         </p>
       </div>
       <UButton
-        to="/leads/new"
         icon="i-lucide-plus"
         label="New Lead"
         color="primary"
+        @click="openNewLeadModal"
       />
     </div>
 
@@ -102,9 +103,9 @@ const groupedSections = computed<Section[]>(() => {
         Start by creating your first lead for a specific issue or a general one.
       </p>
       <UButton
-        to="/leads/new"
         icon="i-lucide-plus"
         size="lg"
+        @click="openNewLeadModal"
       >
         Create Lead
       </UButton>
