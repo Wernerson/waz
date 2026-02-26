@@ -8,7 +8,7 @@ defineProps<{
 
 <template>
   <div
-    class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 hover:border-primary-500/50 group"
+    class="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition-all duration-200 hover:border-primary-500/50 group cursor-pointer"
   >
     <div class="flex flex-col gap-2">
       <div class="flex justify-between items-start gap-4">

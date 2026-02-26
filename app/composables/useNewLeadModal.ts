@@ -1,17 +1,17 @@
 export const useNewLeadModal = () => {
-    const isOpen = useState('new-lead-modal-open', () => false)
+  const isOpen = useState('new-lead-modal-open', () => false)
 
-    const open = () => {
-        isOpen.value = true
-    }
+  const open = () => {
+    isOpen.value = true
+  }
 
-    const close = () => {
-        isOpen.value = false
-    }
+  const close = () => {
+    isOpen.value = false
+  }
 
-    return {
-        isOpen,
-        open,
-        close
-    }
+  return {
+    isOpen,
+    open,
+    close
+  }
 }

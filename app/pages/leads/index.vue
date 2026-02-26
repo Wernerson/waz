@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import { useConvexQuery } from 'convex-vue'
 import { api } from '@@/convex/_generated/api'
 import type { Doc } from '@@/convex/_generated/dataModel'
+import { LazyLeadDetailsSlideover } from '#components'
 
 interface Section {
   id: string
@@ -10,6 +12,13 @@ interface Section {
 
 const { data: leads, isPending } = useConvexQuery(api.leads.list, {})
 const { open: openNewLeadModal } = useNewLeadModal()
+
+const overlay = useOverlay()
+const leadSlideover = overlay.create(LazyLeadDetailsSlideover)
+
+const openLead = (lead: Doc<'leads'>) => {
+  leadSlideover.open({ lead })
+}
 
 const groupedSections = computed<Section[]>(() => {
   const leadsData = leads.value
@@ -143,6 +152,7 @@ const groupedSections = computed<Section[]>(() => {
             v-for="lead in section.leads"
             :key="lead._id"
             :lead="lead"
+            @click="openLead(lead)"
           />
         </div>
       </section>
