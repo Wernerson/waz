@@ -108,3 +108,24 @@ export const addComment = mutation({
     return commentId
   }
 })
+
+export const updateTitle = mutation({
+  args: { id: v.id("leads"), title: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { title: args.title })
+  }
+})
+
+export const updateDescription = mutation({
+  args: { id: v.id("leads"), description: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { description: args.description })
+  }
+})
+
+export const updateOwner = mutation({
+  args: { id: v.id("leads"), owner: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { owner: args.owner })
+  }
+})
