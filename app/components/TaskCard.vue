@@ -2,7 +2,7 @@
 export interface Task {
   id: string
   text: string
-  status: 'todo' | 'in-progress' | 'done'
+  status: "todo" | "in-progress" | "done"
 }
 
 defineProps<{

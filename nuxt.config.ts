@@ -2,22 +2,22 @@
 
 export default defineNuxtConfig({
 
-  modules: ['@nuxt/eslint', '@nuxt/ui', 'convex-nuxt'],
+  modules: ["@nuxt/eslint", "@nuxt/ui", "convex-nuxt"],
 
   devtools: {
     enabled: true
   },
 
-  css: ['~/assets/css/main.css'],
+  css: ["~/assets/css/main.css"],
 
   routeRules: {
-    '/': { prerender: true }
+    "/": { prerender: true }
   },
   future: {
     compatibilityVersion: 4
   },
 
-  compatibilityDate: '2025-01-15',
+  compatibilityDate: "2025-01-15",
   convex: {
     url: process.env.CONVEX_URL
   },
@@ -25,8 +25,9 @@ export default defineNuxtConfig({
   eslint: {
     config: {
       stylistic: {
-        commaDangle: 'never',
-        braceStyle: '1tbs'
+        commaDangle: "never",
+        braceStyle: "1tbs",
+        quotes: "double"
       }
     }
   }

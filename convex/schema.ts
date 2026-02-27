@@ -1,5 +1,5 @@
-import { defineSchema, defineTable } from 'convex/server'
-import { v } from 'convex/values'
+import { defineSchema, defineTable } from "convex/server"
+import { v } from "convex/values"
 
 export default defineSchema({
   leads: defineTable({
@@ -12,15 +12,15 @@ export default defineSchema({
       number: v.number()
     })),
     attachments: v.optional(v.array(v.object({
-      storageId: v.id('_storage'),
+      storageId: v.id("_storage"),
       name: v.string(),
       contentType: v.string(),
       size: v.number()
     })))
   }),
   comments: defineTable({
-    leadId: v.id('leads'),
+    leadId: v.id("leads"),
     author: v.string(),
     text: v.string()
-  }).index('by_leadId', ['leadId'])
+  }).index("by_leadId", ["leadId"])
 })

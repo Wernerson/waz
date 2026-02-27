@@ -1,14 +1,14 @@
-import { query, mutation } from './_generated/server'
-import { v } from 'convex/values'
+import { query, mutation } from "./_generated/server"
+import { v } from "convex/values"
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db.query('leads').collect()
+    return await ctx.db.query("leads").collect()
   }
 })
 
 export const get = query({
-  args: { id: v.id('leads') },
+  args: { id: v.id("leads") },
   handler: async (ctx, args) => {
     const lead = await ctx.db.get(args.id)
     if (!lead) return null
@@ -19,8 +19,8 @@ export const get = query({
       }))
     )
     const comments = await ctx.db
-      .query('comments')
-      .withIndex('by_leadId', q => q.eq('leadId', args.id))
+      .query("comments")
+      .withIndex("by_leadId", q => q.eq("leadId", args.id))
       .collect()
     return { ...lead, attachments, comments }
   }
@@ -33,14 +33,14 @@ export const createLead = mutation({
     owner: v.optional(v.string()),
     category: v.optional(v.string()),
     attachments: v.optional(v.array(v.object({
-      storageId: v.id('_storage'),
+      storageId: v.id("_storage"),
       name: v.string(),
       contentType: v.string(),
       size: v.number()
     })))
   },
   handler: async (ctx, args) => {
-    const leadId = await ctx.db.insert('leads', {
+    const leadId = await ctx.db.insert("leads", {
       title: args.title,
       description: args.description,
       owner: args.owner,
@@ -53,15 +53,15 @@ export const createLead = mutation({
 
 export const addAttachment = mutation({
   args: {
-    leadId: v.id('leads'),
-    storageId: v.id('_storage'),
+    leadId: v.id("leads"),
+    storageId: v.id("_storage"),
     name: v.string(),
     contentType: v.string(),
     size: v.number()
   },
   handler: async (ctx, args) => {
     const lead = await ctx.db.get(args.leadId)
-    if (!lead) throw new Error('Lead not found')
+    if (!lead) throw new Error("Lead not found")
 
     const attachments = lead.attachments ?? []
     attachments.push({
@@ -77,12 +77,12 @@ export const addAttachment = mutation({
 
 export const removeAttachment = mutation({
   args: {
-    leadId: v.id('leads'),
-    storageId: v.id('_storage')
+    leadId: v.id("leads"),
+    storageId: v.id("_storage")
   },
   handler: async (ctx, args) => {
     const lead = await ctx.db.get(args.leadId)
-    if (!lead) throw new Error('Lead not found')
+    if (!lead) throw new Error("Lead not found")
 
     const attachments = (lead.attachments ?? []).filter(
       a => a.storageId !== args.storageId
@@ -95,12 +95,12 @@ export const removeAttachment = mutation({
 
 export const addComment = mutation({
   args: {
-    leadId: v.id('leads'),
+    leadId: v.id("leads"),
     author: v.string(),
     text: v.string()
   },
   handler: async (ctx, args) => {
-    const commentId = await ctx.db.insert('comments', {
+    const commentId = await ctx.db.insert("comments", {
       leadId: args.leadId,
       author: args.author,
       text: args.text

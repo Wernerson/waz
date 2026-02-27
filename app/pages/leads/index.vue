@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { useConvexQuery } from 'convex-vue'
-import { api } from '@@/convex/_generated/api'
-import type { Doc } from '@@/convex/_generated/dataModel'
-import { LazyLeadDetailsSlideover } from '#components'
+import { useConvexQuery } from "convex-vue"
+import { api } from "@@/convex/_generated/api"
+import type { Doc } from "@@/convex/_generated/dataModel"
+import { LazyLeadDetailsSlideover } from "#components"
 
 interface Section {
   id: string
   title: string
-  leads: Doc<'leads'>[]
+  leads: Doc<"leads">[]
 }
 
 const { data: leads, isPending } = useConvexQuery(api.leads.list, {})
@@ -16,7 +16,7 @@ const { open: openNewLeadModal } = useNewLeadModal()
 const overlay = useOverlay()
 const leadSlideover = overlay.create(LazyLeadDetailsSlideover)
 
-const openLead = (lead: Doc<'leads'>) => {
+const openLead = (lead: Doc<"leads">) => {
   leadSlideover.open({ lead })
 }
 
@@ -27,20 +27,20 @@ const groupedSections = computed<Section[]>(() => {
   const sections: Section[] = []
 
   // 1. New leads (no issue)
-  const newLeads = leadsData.filter((l: Doc<'leads'>) => !l.issue)
+  const newLeads = leadsData.filter((l: Doc<"leads">) => !l.issue)
   if (newLeads.length > 0) {
     sections.push({
-      id: 'new',
-      title: 'New',
+      id: "new",
+      title: "New",
       leads: newLeads
     })
   }
 
   // 2. Assigned leads grouped by issue
-  const assignedLeads = leadsData.filter((l: Doc<'leads'>) => !!l.issue)
+  const assignedLeads = leadsData.filter((l: Doc<"leads">) => !!l.issue)
 
   // Sort assigned leads by year then number
-  const sortedAssigned = [...assignedLeads].sort((a: Doc<'leads'>, b: Doc<'leads'>) => {
+  const sortedAssigned = [...assignedLeads].sort((a: Doc<"leads">, b: Doc<"leads">) => {
     if (a.issue!.year !== b.issue!.year) return a.issue!.year - b.issue!.year
     return a.issue!.number - b.issue!.number
   })
@@ -48,7 +48,7 @@ const groupedSections = computed<Section[]>(() => {
   // Create unique issue groups
   const issueMap = new Map<string, Section>()
 
-  sortedAssigned.forEach((l: Doc<'leads'>) => {
+  sortedAssigned.forEach((l: Doc<"leads">) => {
     const key = `${l.issue!.year}-${l.issue!.number}`
     if (!issueMap.has(key)) {
       const section: Section = {

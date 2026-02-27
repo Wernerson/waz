@@ -8,7 +8,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
-    "typecheck": "nuxt typecheck"
+    "typecheck": "nuxt typecheck",
+    "prepare": "husky"
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.90",
@@ -24,6 +25,7 @@
     "@nuxt/eslint": "^1.15.1",
     "@types/node": "^25.3.0",
     "eslint": "^10.0.0",
+    "husky": "^9.1.7",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.2.4"
   },

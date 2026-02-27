@@ -1,5 +1,5 @@
 export const useNewLeadModal = () => {
-  const isOpen = useState('new-lead-modal-open', () => false)
+  const isOpen = useState("new-lead-modal-open", () => false)
 
   const open = () => {
     isOpen.value = true

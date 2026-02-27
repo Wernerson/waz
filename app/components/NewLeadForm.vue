@@ -1,24 +1,24 @@
 <script setup lang="ts">
-import { api } from '@@/convex/_generated/api'
+import { api } from "@@/convex/_generated/api"
 
-const emit = defineEmits(['success', 'close'])
+const emit = defineEmits(["success", "close"])
 
 const state = reactive({
-  title: '',
-  description: '',
-  category: '',
-  owner: ''
+  title: "",
+  description: "",
+  category: "",
+  owner: ""
 })
 
 interface SelectedFile {
   file: File
   storageId?: string
-  status: 'pending' | 'uploading' | 'done' | 'error'
+  status: "pending" | "uploading" | "done" | "error"
 }
 
 const selectedFiles = ref<SelectedFile[]>([])
 
-const fixedCategories = ['Grüezi', 'Rückblick', 'Serie']
+const fixedCategories = ["Grüezi", "Rückblick", "Serie"]
 const items = ref<string[]>([])
 
 const categoryItems = computed(() => {
@@ -41,12 +41,12 @@ const onFileChange = (event: Event) => {
   files.forEach((file) => {
     selectedFiles.value.push({
       file,
-      status: 'pending'
+      status: "pending"
     })
   })
 
   // Reset input
-  target.value = ''
+  target.value = ""
 }
 
 const removeFile = (index: number) => {
@@ -55,22 +55,22 @@ const removeFile = (index: number) => {
 
 const uploadFiles = async () => {
   const uploads = selectedFiles.value.map(async (item) => {
-    if (item.status === 'done') return
+    if (item.status === "done") return
 
-    item.status = 'uploading'
+    item.status = "uploading"
     try {
       const postUrl = await generateUploadUrl({})
       const result = await fetch(postUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': item.file.type },
+        method: "POST",
+        headers: { "Content-Type": item.file.type },
         body: item.file
       })
       const { storageId } = await result.json()
       item.storageId = storageId
-      item.status = 'done'
+      item.status = "done"
     } catch (error) {
-      console.error('File upload failed:', error)
-      item.status = 'error'
+      console.error("File upload failed:", error)
+      item.status = "error"
     }
   })
 
@@ -84,7 +84,7 @@ const onSubmit = async () => {
     await uploadFiles()
 
     const attachments = selectedFiles.value
-      .filter(f => f.status === 'done' && f.storageId)
+      .filter(f => f.status === "done" && f.storageId)
       .map(f => ({
         storageId: f.storageId as any,
         name: f.file.name,
@@ -100,9 +100,9 @@ const onSubmit = async () => {
       attachments: attachments as any
     })
 
-    emit('success')
+    emit("success")
   } catch (error) {
-    console.error('Failed to create lead:', error)
+    console.error("Failed to create lead:", error)
   }
 }
 </script>

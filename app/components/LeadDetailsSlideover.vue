@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { api } from '@@/convex/_generated/api'
-import type { Id } from '@@/convex/_generated/dataModel'
+import { api } from "@@/convex/_generated/api"
+import type { Id } from "@@/convex/_generated/dataModel"
 
 const props = defineProps<{
   lead: any
@@ -11,9 +11,9 @@ defineEmits<{
 }>()
 
 // Use query to get the live lead data including comments
-const { data: fullLead } = useConvexQuery(api.leads.get, { id: props.lead._id as Id<'leads'> })
+const { data: fullLead } = useConvexQuery(api.leads.get, { id: props.lead._id as Id<"leads"> })
 
-const commentText = ref('')
+const commentText = ref("")
 const isSubmitting = ref(false)
 const { mutate: addComment } = useConvexMutation(api.leads.addComment)
 
@@ -23,13 +23,13 @@ const handleAddComment = async () => {
   isSubmitting.value = true
   try {
     await addComment({
-      leadId: props.lead._id as Id<'leads'>,
-      author: 'You', // Hardcoded for now as there's no auth
+      leadId: props.lead._id as Id<"leads">,
+      author: "You", // Hardcoded for now as there's no auth
       text: commentText.value.trim()
     })
-    commentText.value = ''
+    commentText.value = ""
   } catch (err) {
-    console.error('Failed to add comment:', err)
+    console.error("Failed to add comment:", err)
   } finally {
     isSubmitting.value = false
   }

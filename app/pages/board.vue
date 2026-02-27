@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import draggable from 'vuedraggable'
+import { ref } from "vue"
+import draggable from "vuedraggable"
 
 interface Task {
   id: string
   text: string
-  status: 'todo' | 'in-progress' | 'done'
+  status: "todo" | "in-progress" | "done"
 }
 
 const columns = [
-  { id: 'todo', title: 'To Do', color: 'bg-slate-100 dark:bg-slate-800' },
-  { id: 'in-progress', title: 'In Progress', color: 'bg-blue-50 dark:bg-blue-900/20' },
-  { id: 'done', title: 'Done', color: 'bg-green-50 dark:bg-green-900/20' }
+  { id: "todo", title: "To Do", color: "bg-slate-100 dark:bg-slate-800" },
+  { id: "in-progress", title: "In Progress", color: "bg-blue-50 dark:bg-blue-900/20" },
+  { id: "done", title: "Done", color: "bg-green-50 dark:bg-green-900/20" }
 ] as const
 
-const tasksByStatus = ref<Record<Task['status'], Task[]>>({
-  'todo': [
-    { id: '4', text: 'Add HTML5 drag and drop API support', status: 'todo' },
-    { id: '5', text: 'Refactor UI components to use Tailwind CSS variants', status: 'todo' },
-    { id: '6', text: 'Setup CI/CD pipeline in GitHub Actions', status: 'todo' }
+const tasksByStatus = ref<Record<Task["status"], Task[]>>({
+  "todo": [
+    { id: "4", text: "Add HTML5 drag and drop API support", status: "todo" },
+    { id: "5", text: "Refactor UI components to use Tailwind CSS variants", status: "todo" },
+    { id: "6", text: "Setup CI/CD pipeline in GitHub Actions", status: "todo" }
   ],
-  'in-progress': [
-    { id: '2', text: 'Implement authentication using NextAuth.js or custom solution', status: 'in-progress' },
-    { id: '3', text: 'Create board layout with responsive grid', status: 'in-progress' }
+  "in-progress": [
+    { id: "2", text: "Implement authentication using NextAuth.js or custom solution", status: "in-progress" },
+    { id: "3", text: "Create board layout with responsive grid", status: "in-progress" }
   ],
-  'done': [
-    { id: '1', text: 'Design new architecture for the Nuxt app', status: 'done' }
+  "done": [
+    { id: "1", text: "Design new architecture for the Nuxt app", status: "done" }
   ]
 })
 
-const onChange = (event: { added?: { element: Task } }, newStatus: Task['status']) => {
+const onChange = (event: { added?: { element: Task } }, newStatus: Task["status"]) => {
   if (event.added) {
     const task = event.added.element
     task.status = newStatus
