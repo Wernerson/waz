@@ -7,7 +7,7 @@ const state = reactive({
   title: '',
   description: '',
   category: '',
-  owner: '',
+  owner: ''
 })
 
 interface SelectedFile {
@@ -38,13 +38,13 @@ const onFileChange = (event: Event) => {
   if (!target.files) return
 
   const files = Array.from(target.files)
-  files.forEach(file => {
+  files.forEach((file) => {
     selectedFiles.value.push({
       file,
       status: 'pending'
     })
   })
-  
+
   // Reset input
   target.value = ''
 }
@@ -56,16 +56,16 @@ const removeFile = (index: number) => {
 const uploadFiles = async () => {
   const uploads = selectedFiles.value.map(async (item) => {
     if (item.status === 'done') return
-    
+
     item.status = 'uploading'
     try {
       const postUrl = await generateUploadUrl({})
       const result = await fetch(postUrl, {
-        method: "POST",
-        headers: { "Content-Type": item.file.type },
-        body: item.file,
-      });
-      const { storageId } = await result.json();
+        method: 'POST',
+        headers: { 'Content-Type': item.file.type },
+        body: item.file
+      })
+      const { storageId } = await result.json()
       item.storageId = storageId
       item.status = 'done'
     } catch (error) {
@@ -73,7 +73,7 @@ const uploadFiles = async () => {
       item.status = 'error'
     }
   })
-  
+
   await Promise.all(uploads)
 }
 
@@ -82,7 +82,7 @@ const onSubmit = async () => {
 
   try {
     await uploadFiles()
-    
+
     const attachments = selectedFiles.value
       .filter(f => f.status === 'done' && f.storageId)
       .map(f => ({
@@ -271,4 +271,3 @@ const onSubmit = async () => {
     </div>
   </UForm>
 </template>
-

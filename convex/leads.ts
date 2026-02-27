@@ -3,18 +3,7 @@ import { v } from 'convex/values'
 
 export const list = query({
   handler: async (ctx) => {
-    const leads = await ctx.db.query('leads').collect()
-    return await Promise.all(
-      leads.map(async (lead) => {
-        const attachments = await Promise.all(
-          (lead.attachments ?? []).map(async (attachment) => ({
-            ...attachment,
-            url: await ctx.storage.getUrl(attachment.storageId),
-          }))
-        )
-        return { ...lead, attachments }
-      })
-    )
+    return await ctx.db.query('leads').collect()
   }
 })
 
@@ -24,15 +13,18 @@ export const get = query({
     const lead = await ctx.db.get(args.id)
     if (!lead) return null
     const attachments = await Promise.all(
-      (lead.attachments ?? []).map(async (attachment) => ({
+      (lead.attachments ?? []).map(async attachment => ({
         ...attachment,
-        url: await ctx.storage.getUrl(attachment.storageId),
+        url: await ctx.storage.getUrl(attachment.storageId)
       }))
     )
-    return { ...lead, attachments }
+    const comments = await ctx.db
+      .query('comments')
+      .withIndex('by_leadId', q => q.eq('leadId', args.id))
+      .collect()
+    return { ...lead, attachments, comments }
   }
 })
-
 
 export const createLead = mutation({
   args: {
@@ -41,10 +33,10 @@ export const createLead = mutation({
     owner: v.optional(v.string()),
     category: v.optional(v.string()),
     attachments: v.optional(v.array(v.object({
-      storageId: v.id("_storage"),
+      storageId: v.id('_storage'),
       name: v.string(),
       contentType: v.string(),
-      size: v.number(),
+      size: v.number()
     })))
   },
   handler: async (ctx, args) => {
@@ -58,7 +50,6 @@ export const createLead = mutation({
     return leadId
   }
 })
-
 
 export const addAttachment = mutation({
   args: {
@@ -94,7 +85,7 @@ export const removeAttachment = mutation({
     if (!lead) throw new Error('Lead not found')
 
     const attachments = (lead.attachments ?? []).filter(
-      (a) => a.storageId !== args.storageId
+      a => a.storageId !== args.storageId
     )
 
     await ctx.db.patch(args.leadId, { attachments })
@@ -102,3 +93,18 @@ export const removeAttachment = mutation({
   }
 })
 
+export const addComment = mutation({
+  args: {
+    leadId: v.id('leads'),
+    author: v.string(),
+    text: v.string()
+  },
+  handler: async (ctx, args) => {
+    const commentId = await ctx.db.insert('comments', {
+      leadId: args.leadId,
+      author: args.author,
+      text: args.text
+    })
+    return commentId
+  }
+})
