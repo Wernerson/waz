@@ -52,27 +52,33 @@ const saveField = async () => {
   if (!editingField.value || !fullLead.value || isSavingField.value) return
 
   const field = editingField.value
-
-  // If category, wait a tick for v-model to sync from UInputMenu and selection to complete
+  
   if (field === "category") {
-    await new Promise(resolve => setTimeout(resolve, 150))
-    // If the field was already cleared (e.g. by another saveField call), stop
+    // Menu selection needs time to update the model before we close the field
+    await new Promise(resolve => setTimeout(resolve, 300))
     if (!editingField.value) return
   }
 
-  isSavingField.value = true
   const value = tempValue.value
-  editingField.value = null // Close immediately for snappier UI
+  const id = fullLead.value._id
+  
+  isSavingField.value = true
+  editingField.value = null
 
   try {
     if (field === "title") {
-      await updateTitle({ id: fullLead.value._id, title: value })
-    } else if (field === "description") {
-      await updateDescription({ id: fullLead.value._id, description: value })
-    } else if (field === "owner") {
-      await updateOwner({ id: fullLead.value._id, owner: value })
-    } else if (field === "category") {
-      await updateCategory({ id: fullLead.value._id, category: value })
+      await updateTitle({ id, title: value })
+    } else {
+      // Optional fields: description, owner, category
+      const cleanedValue = (value === null || value === "") ? undefined : value
+      
+      if (field === "description") {
+        await updateDescription({ id, description: cleanedValue as any })
+      } else if (field === "owner") {
+        await updateOwner({ id, owner: cleanedValue as any })
+      } else if (field === "category") {
+        await updateCategory({ id, category: cleanedValue as any })
+      }
     }
   } catch (err) {
     console.error(`Failed to update ${field}:`, err)
@@ -223,6 +229,7 @@ const onFileChange = async (e: Event) => {
                 create-item
                 size="md"
                 autofocus
+                :clear="true"
                 @create="onCreateCategory"
                 @blur="saveField"
                 @update:model-value="saveField"

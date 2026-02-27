@@ -117,22 +117,22 @@ export const updateTitle = mutation({
 })
 
 export const updateDescription = mutation({
-  args: { id: v.id("leads"), description: v.string() },
+  args: { id: v.id("leads"), description: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { description: args.description })
+    await ctx.db.patch(args.id, { description: args.description || undefined })
   }
 })
 
 export const updateOwner = mutation({
-  args: { id: v.id("leads"), owner: v.string() },
+  args: { id: v.id("leads"), owner: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { owner: args.owner })
+    await ctx.db.patch(args.id, { owner: args.owner || undefined })
   }
 })
 
 export const updateCategory = mutation({
-  args: { id: v.id("leads"), category: v.string() },
+  args: { id: v.id("leads"), category: v.optional(v.string()) },
   handler: async (ctx, args) => {
-    await ctx.db.patch(args.id, { category: args.category })
+    await ctx.db.patch(args.id, { category: args.category || undefined })
   }
 })
