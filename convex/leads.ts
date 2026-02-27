@@ -129,3 +129,10 @@ export const updateOwner = mutation({
     await ctx.db.patch(args.id, { owner: args.owner })
   }
 })
+
+export const updateCategory = mutation({
+  args: { id: v.id("leads"), category: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { category: args.category })
+  }
+})

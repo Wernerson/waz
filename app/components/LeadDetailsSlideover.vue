@@ -21,21 +21,46 @@ const { mutate: addComment } = useConvexMutation(api.leads.addComment)
 const { mutate: updateTitle } = useConvexMutation(api.leads.updateTitle)
 const { mutate: updateDescription } = useConvexMutation(api.leads.updateDescription)
 const { mutate: updateOwner } = useConvexMutation(api.leads.updateOwner)
+const { mutate: updateCategory } = useConvexMutation(api.leads.updateCategory)
 const { mutate: addAttachment } = useConvexMutation(api.leads.addAttachment)
 const { mutate: generateUploadUrl } = useConvexMutation(api.files.generateUploadUrl)
 
 const editingField = ref<string | null>(null)
 const tempValue = ref("")
 
+const fixedCategories = ["Grüezi", "Rückblick", "Serie"]
+const customItems = ref<string[]>([])
+
+const categoryItems = computed(() => {
+  return [...fixedCategories, ...customItems.value]
+})
+
+const onCreateCategory = (item: string) => {
+  customItems.value.push(item)
+  tempValue.value = item
+  saveField()
+}
+
 const startEditing = (field: string, value: string) => {
   editingField.value = field
   tempValue.value = value || ""
 }
 
+const isSavingField = ref(false)
+
 const saveField = async () => {
-  if (!editingField.value || !fullLead.value) return
+  if (!editingField.value || !fullLead.value || isSavingField.value) return
 
   const field = editingField.value
+
+  // If category, wait a tick for v-model to sync from UInputMenu and selection to complete
+  if (field === "category") {
+    await new Promise(resolve => setTimeout(resolve, 150))
+    // If the field was already cleared (e.g. by another saveField call), stop
+    if (!editingField.value) return
+  }
+
+  isSavingField.value = true
   const value = tempValue.value
   editingField.value = null // Close immediately for snappier UI
 
@@ -46,9 +71,13 @@ const saveField = async () => {
       await updateDescription({ id: fullLead.value._id, description: value })
     } else if (field === "owner") {
       await updateOwner({ id: fullLead.value._id, owner: value })
+    } else if (field === "category") {
+      await updateCategory({ id: fullLead.value._id, category: value })
     }
   } catch (err) {
     console.error(`Failed to update ${field}:`, err)
+  } finally {
+    isSavingField.value = false
   }
 }
 
@@ -127,14 +156,6 @@ const onFileChange = async (e: Event) => {
           <div>
             <div class="flex items-center gap-2 mb-3">
               <UBadge
-                v-if="fullLead.category"
-                color="primary"
-                variant="subtle"
-                size="md"
-              >
-                {{ fullLead.category }}
-              </UBadge>
-              <UBadge
                 v-if="fullLead.issue"
                 color="neutral"
                 variant="outline"
@@ -186,6 +207,45 @@ const onFileChange = async (e: Event) => {
             >
               {{ fullLead.description || 'Add a description...' }}
             </p>
+          </div>
+
+          <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
+            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+              Category
+            </h3>
+            <div v-show="editingField === 'category'">
+              <UInputMenu
+                v-model="tempValue"
+                :items="categoryItems"
+                placeholder="Select category"
+                open-on-focus
+                class="w-full"
+                create-item
+                size="md"
+                autofocus
+                @create="onCreateCategory"
+                @blur="saveField"
+                @update:model-value="saveField"
+              />
+            </div>
+            <div
+              v-show="editingField !== 'category'"
+              class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1 inline-block"
+              @click="startEditing('category', fullLead.category || '')"
+            >
+              <UBadge
+                v-if="fullLead.category"
+                color="primary"
+                variant="subtle"
+                size="md"
+              >
+                {{ fullLead.category }}
+              </UBadge>
+              <span
+                v-else
+                class="text-slate-400 italic text-sm"
+              >Select category...</span>
+            </div>
           </div>
 
           <div class="pt-6 border-t border-slate-100 dark:border-slate-800">

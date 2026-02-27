@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { api } from "@@/convex/_generated/api"
+import type { Id } from "@@/convex/_generated/dataModel"
 
 const emit = defineEmits(["success", "close"])
 
@@ -86,7 +87,7 @@ const onSubmit = async () => {
     const attachments = selectedFiles.value
       .filter(f => f.status === "done" && f.storageId)
       .map(f => ({
-        storageId: f.storageId as any,
+        storageId: f.storageId as Id<"_storage">,
         name: f.file.name,
         contentType: f.file.type,
         size: f.file.size
@@ -97,7 +98,7 @@ const onSubmit = async () => {
       description: state.description || undefined,
       category: state.category || undefined,
       owner: state.owner || undefined,
-      attachments: attachments as any
+      attachments
     })
 
     emit("success")
