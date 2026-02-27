@@ -10,6 +10,12 @@ export default defineSchema({
     issue: v.optional(v.object({
       year: v.number(),
       number: v.number()
-    }))
+    })),
+    attachments: v.optional(v.array(v.object({
+      storageId: v.id("_storage"),
+      name: v.string(),
+      contentType: v.string(),
+      size: v.number(),
+    })))
   })
 })

@@ -2,8 +2,9 @@
 import type { Doc } from '@@/convex/_generated/dataModel'
 
 defineProps<{
-  lead: Doc<'leads'>
+  lead: any
 }>()
+
 
 defineEmits<{
   close: []
@@ -50,7 +51,45 @@ defineEmits<{
           </p>
         </div>
 
+        <div
+          v-if="lead.attachments && lead.attachments.length > 0"
+          class="pt-6 border-t border-slate-100 dark:border-slate-800"
+        >
+          <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+            Attachments ({{ lead.attachments.length }})
+          </h3>
+          <div class="space-y-2">
+            <a
+              v-for="file in lead.attachments"
+              :key="file.storageId"
+              :href="file.url"
+              target="_blank"
+              class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 hover:border-primary/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all group"
+            >
+              <div class="flex items-center gap-3 overflow-hidden">
+                <UIcon
+                  :name="file.contentType.startsWith('image/') ? 'i-lucide-image' : 'i-lucide-file-text'"
+                  class="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors flex-shrink-0"
+                />
+                <div class="flex flex-col overflow-hidden">
+                  <span class="text-sm font-medium text-slate-900 dark:text-white truncate">
+                    {{ file.name }}
+                  </span>
+                  <span class="text-xs text-slate-500">
+                    {{ (file.size / 1024).toFixed(1) }} KB
+                  </span>
+                </div>
+              </div>
+              <UIcon
+                name="i-lucide-external-link"
+                class="w-4 h-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity"
+              />
+            </a>
+          </div>
+        </div>
+
         <div class="grid grid-cols-2 gap-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+
           <div>
             <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
               Owner
