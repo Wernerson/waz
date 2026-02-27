@@ -52,7 +52,7 @@ const saveField = async () => {
   if (!editingField.value || !fullLead.value || isSavingField.value) return
 
   const field = editingField.value
-  
+
   if (field === "category") {
     // Menu selection needs time to update the model before we close the field
     await new Promise(resolve => setTimeout(resolve, 300))
@@ -61,7 +61,7 @@ const saveField = async () => {
 
   const value = tempValue.value
   const id = fullLead.value._id
-  
+
   isSavingField.value = true
   editingField.value = null
 
@@ -71,13 +71,13 @@ const saveField = async () => {
     } else {
       // Optional fields: description, owner, category
       const cleanedValue = (value === null || value === "") ? undefined : value
-      
+
       if (field === "description") {
-        await updateDescription({ id, description: cleanedValue as any })
+        await updateDescription({ id, description: cleanedValue as string | undefined })
       } else if (field === "owner") {
-        await updateOwner({ id, owner: cleanedValue as any })
+        await updateOwner({ id, owner: cleanedValue as string | undefined })
       } else if (field === "category") {
-        await updateCategory({ id, category: cleanedValue as any })
+        await updateCategory({ id, category: cleanedValue as string | undefined })
       }
     }
   } catch (err) {
@@ -215,72 +215,74 @@ const onFileChange = async (e: Event) => {
             </p>
           </div>
 
-          <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
-            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
-              Category
-            </h3>
-            <div v-show="editingField === 'category'">
-              <UInputMenu
-                v-model="tempValue"
-                :items="categoryItems"
-                placeholder="Select category"
-                open-on-focus
-                class="w-full"
-                create-item
-                size="md"
-                autofocus
-                :clear="true"
-                @create="onCreateCategory"
-                @blur="saveField"
-                @update:model-value="saveField"
-              />
-            </div>
-            <div
-              v-show="editingField !== 'category'"
-              class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1 inline-block"
-              @click="startEditing('category', fullLead.category || '')"
-            >
-              <UBadge
-                v-if="fullLead.category"
-                color="primary"
-                variant="subtle"
-                size="md"
-              >
-                {{ fullLead.category }}
-              </UBadge>
-              <span
-                v-else
-                class="text-slate-400 italic text-sm"
-              >Select category...</span>
-            </div>
-          </div>
-
-          <div class="pt-6 border-t border-slate-100 dark:border-slate-800">
-            <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
-              Owner
-            </h3>
-            <div class="flex items-center gap-2">
-              <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
-                <UIcon
-                  name="i-lucide-user"
-                  class="w-4 h-4 text-slate-500"
-                />
-              </div>
-              <div v-if="editingField === 'owner'">
-                <UInput
+          <div class="grid grid-cols-2 gap-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                Category
+              </h3>
+              <div v-show="editingField === 'category'">
+                <UInputMenu
                   v-model="tempValue"
+                  :items="categoryItems"
+                  placeholder="Select category"
+                  open-on-focus
+                  class="w-full"
+                  create-item
+                  size="md"
                   autofocus
+                  :clear="true"
+                  @create="onCreateCategory"
                   @blur="saveField"
-                  @keydown.enter="saveField"
+                  @update:model-value="saveField"
                 />
               </div>
-              <span
-                v-else
-                class="font-medium text-slate-900 dark:text-white cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1"
-                @click="startEditing('owner', fullLead.owner || '')"
+              <div
+                v-show="editingField !== 'category'"
+                class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1 inline-block"
+                @click="startEditing('category', fullLead.category || '')"
               >
-                {{ fullLead.owner || 'Unassigned' }}
-              </span>
+                <UBadge
+                  v-if="fullLead.category"
+                  color="primary"
+                  variant="subtle"
+                  size="md"
+                >
+                  {{ fullLead.category }}
+                </UBadge>
+                <span
+                  v-else
+                  class="text-slate-400 italic text-sm"
+                >Select category...</span>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                Owner
+              </h3>
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <UIcon
+                    name="i-lucide-user"
+                    class="w-4 h-4 text-slate-500"
+                  />
+                </div>
+                <div v-if="editingField === 'owner'">
+                  <UInput
+                    v-model="tempValue"
+                    autofocus
+                    @blur="saveField"
+                    @keydown.enter="saveField"
+                  />
+                </div>
+                <span
+                  v-else
+                  class="font-medium text-slate-900 dark:text-white cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1"
+                  @click="startEditing('owner', fullLead.owner || '')"
+                >
+                  {{ fullLead.owner || 'Unassigned' }}
+                </span>
+              </div>
             </div>
           </div>
 
