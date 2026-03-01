@@ -100,10 +100,12 @@ const onSubmit = async () => {
       description: state.description || undefined,
       category: state.category || undefined,
       owner: state.owner || undefined,
-      issue: (state.issueYear && state.issueNumber) ? {
-        year: Number(state.issueYear),
-        number: Number(state.issueNumber)
-      } : undefined,
+      issue: (state.issueYear && state.issueNumber)
+        ? {
+            year: Number(state.issueYear),
+            number: Number(state.issueNumber)
+          }
+        : undefined,
       attachments
     })
 
@@ -277,7 +279,9 @@ const onSubmit = async () => {
             size="md"
           />
         </UFormField>
-        <div class="pt-6 text-xl text-slate-400 font-light">/</div>
+        <div class="pt-6 text-xl text-slate-400 font-light">
+          /
+        </div>
         <UFormField
           label="Year"
           name="issueYear"

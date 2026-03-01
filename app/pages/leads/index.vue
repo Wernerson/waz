@@ -3,6 +3,7 @@ import { useConvexQuery } from "convex-vue"
 import { api } from "@@/convex/_generated/api"
 import type { Doc } from "@@/convex/_generated/dataModel"
 import { LazyLeadDetailsSlideover } from "#components"
+import draggable from "vuedraggable"
 
 interface Section {
   id: string
@@ -23,43 +24,27 @@ const openLead = (lead: Doc<"leads">) => {
 
 const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
 
-const dragTarget = ref<string | null>(null)
-
-const onDragOver = (e: DragEvent, section: Section) => {
-  e.preventDefault()
-  dragTarget.value = section.id
-}
-
-const onDragLeave = () => {
-  dragTarget.value = null
-}
-
-const onDrop = (e: DragEvent, section: Section) => {
-  e.preventDefault()
-  e.stopPropagation()
-  dragTarget.value = null
-  const data = e.dataTransfer?.getData("application/json")
-  if (!data) return
-  try {
-    const { leadId } = JSON.parse(data)
+const onAdd = (e: any, section: Section) => {
+  const leadId = e.item.getAttribute('data-lead-id')
+  if (leadId) {
     updateIssue({ id: leadId, issue: section.issue })
-  } catch (err) {
-    console.error("Failed to parse drag data:", err)
   }
 }
+
+const dragTarget = ref<string | null>(null)
 
 const existingIssues = computed(() => {
   const leadsData = leads.value
   if (!leadsData) return []
-  
+
   const issues = new Map<string, { year: number, number: number }>()
-  leadsData.forEach(l => {
+  leadsData.forEach((l) => {
     if (l.issue) {
       const key = `${l.issue.number}/${l.issue.year}`
       issues.set(key, l.issue)
     }
   })
-  
+
   return Array.from(issues.values()).sort((a, b) => {
     if (a.year !== b.year) return b.year - a.year
     return b.number - a.number
@@ -174,11 +159,7 @@ const groupedSections = computed<Section[]>(() => {
       <section
         v-for="section in groupedSections"
         :key="section.id"
-        class="animate-in fade-in slide-in-from-bottom-2 duration-500 group/section"
-        :class="{ 'bg-primary-50/30 dark:bg-primary-950/10 ring-2 ring-primary-500/20 rounded-3xl': dragTarget === section.id }"
-        @dragover="onDragOver($event, section)"
-        @dragleave="onDragLeave"
-        @drop="onDrop($event, section)"
+        class="animate-in fade-in slide-in-from-bottom-2 duration-500"
       >
         <div class="flex items-center gap-4 mb-6 sticky top-0 z-10 py-1 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md">
           <div class="flex items-center gap-3">
@@ -198,15 +179,25 @@ const groupedSections = computed<Section[]>(() => {
           </span>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-4 -m-4 rounded-2xl transition-colors">
-          <LeadCard
-            v-for="lead in section.leads"
-            :key="lead._id"
-            :lead="lead"
-            :existing-issues="existingIssues"
-            @click="openLead(lead)"
-          />
-        </div>
+        <draggable
+          :list="section.leads"
+          group="leads"
+          item-key="_id"
+          ghost-class="opacity-40"
+          drag-class="rotate-2"
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 p-4 -m-4 rounded-2xl min-h-[100px]"
+          @add="onAdd($event, section)"
+        >
+          <template #item="{ element: lead }">
+            <div :data-lead-id="lead._id">
+              <LeadCard
+                :lead="lead"
+                :existing-issues="existingIssues"
+                @click="openLead(lead)"
+              />
+            </div>
+          </template>
+        </draggable>
       </section>
     </div>
   </UContainer>
