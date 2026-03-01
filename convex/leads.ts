@@ -37,7 +37,11 @@ export const createLead = mutation({
       name: v.string(),
       contentType: v.string(),
       size: v.number()
-    })))
+    }))),
+    issue: v.optional(v.object({
+      year: v.number(),
+      number: v.number()
+    }))
   },
   handler: async (ctx, args) => {
     const leadId = await ctx.db.insert("leads", {
@@ -45,7 +49,8 @@ export const createLead = mutation({
       description: args.description,
       owner: args.owner,
       category: args.category,
-      attachments: args.attachments ?? []
+      attachments: args.attachments ?? [],
+      issue: args.issue
     })
     return leadId
   }
@@ -134,5 +139,18 @@ export const updateCategory = mutation({
   args: { id: v.id("leads"), category: v.optional(v.string()) },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, { category: args.category || undefined })
+  }
+})
+
+export const updateIssue = mutation({
+  args: {
+    id: v.id("leads"),
+    issue: v.optional(v.object({
+      year: v.number(),
+      number: v.number()
+    }))
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { issue: args.issue })
   }
 })

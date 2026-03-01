@@ -22,11 +22,14 @@ const { mutate: updateTitle } = useConvexMutation(api.leads.updateTitle)
 const { mutate: updateDescription } = useConvexMutation(api.leads.updateDescription)
 const { mutate: updateOwner } = useConvexMutation(api.leads.updateOwner)
 const { mutate: updateCategory } = useConvexMutation(api.leads.updateCategory)
+const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
 const { mutate: addAttachment } = useConvexMutation(api.leads.addAttachment)
 const { mutate: generateUploadUrl } = useConvexMutation(api.files.generateUploadUrl)
 
 const editingField = ref<string | null>(null)
 const tempValue = ref("")
+const tempIssueYear = ref<number | undefined>(undefined)
+const tempIssueNumber = ref<number | undefined>(undefined)
 
 const fixedCategories = ["Grüezi", "Rückblick", "Serie"]
 const customItems = ref<string[]>([])
@@ -41,9 +44,14 @@ const onCreateCategory = (item: string) => {
   saveField()
 }
 
-const startEditing = (field: string, value: string) => {
+const startEditing = (field: string, value: any) => {
   editingField.value = field
-  tempValue.value = value || ""
+  if (field === "issue") {
+    tempIssueYear.value = value?.year
+    tempIssueNumber.value = value?.number
+  } else {
+    tempValue.value = value || ""
+  }
 }
 
 const isSavingField = ref(false)
@@ -78,6 +86,11 @@ const saveField = async () => {
         await updateOwner({ id, owner: cleanedValue as string | undefined })
       } else if (field === "category") {
         await updateCategory({ id, category: cleanedValue as string | undefined })
+      } else if (field === "issue") {
+        const issue = (tempIssueYear.value && tempIssueNumber.value)
+          ? { year: Number(tempIssueYear.value), number: Number(tempIssueNumber.value) }
+          : undefined
+        await updateIssue({ id, issue })
       }
     }
   } catch (err) {
@@ -215,7 +228,7 @@ const onFileChange = async (e: Event) => {
             </p>
           </div>
 
-          <div class="grid grid-cols-2 gap-6 pt-6 border-t border-slate-100 dark:border-slate-800">
+          <div class="grid grid-cols-3 gap-4 pt-6 border-t border-slate-100 dark:border-slate-800">
             <div>
               <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
                 Category
@@ -282,6 +295,52 @@ const onFileChange = async (e: Event) => {
                 >
                   {{ fullLead.owner || 'Unassigned' }}
                 </span>
+              </div>
+            </div>
+
+            <div>
+              <h3 class="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3">
+                Issue
+              </h3>
+              <div
+                v-if="editingField === 'issue'"
+                class="flex items-center gap-1"
+              >
+                <UInput
+                  v-model="tempIssueNumber"
+                  type="number"
+                  placeholder="No."
+                  class="w-12"
+                  size="xs"
+                  @blur="saveField"
+                  @keydown.enter="saveField"
+                />
+                <span class="text-slate-400">/</span>
+                <UInput
+                  v-model="tempIssueYear"
+                  type="number"
+                  placeholder="YYYY"
+                  class="w-16"
+                  size="xs"
+                  @blur="saveField"
+                  @keydown.enter="saveField"
+                />
+              </div>
+              <div
+                v-else
+                class="cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1 rounded -m-1 inline-block"
+                @click="startEditing('issue', fullLead.issue)"
+              >
+                <span
+                  v-if="fullLead.issue"
+                  class="font-medium text-slate-900 dark:text-white"
+                >
+                  {{ fullLead.issue.number }}/{{ fullLead.issue.year }}
+                </span>
+                <span
+                  v-else
+                  class="text-slate-400 italic text-sm"
+                >Set issue...</span>
               </div>
             </div>
           </div>
@@ -421,17 +480,6 @@ const onFileChange = async (e: Event) => {
         <UIcon
           name="i-lucide-loader-2"
           class="w-8 h-8 animate-spin text-primary"
-        />
-      </div>
-    </template>
-
-    <template #footer>
-      <div class="flex justify-end">
-        <UButton
-          label="Close"
-          color="neutral"
-          variant="ghost"
-          @click="$emit('close')"
         />
       </div>
     </template>

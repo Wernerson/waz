@@ -8,7 +8,9 @@ const state = reactive({
   title: "",
   description: "",
   category: "",
-  owner: ""
+  owner: "",
+  issueYear: undefined as number | undefined,
+  issueNumber: undefined as number | undefined
 })
 
 interface SelectedFile {
@@ -98,6 +100,10 @@ const onSubmit = async () => {
       description: state.description || undefined,
       category: state.category || undefined,
       owner: state.owner || undefined,
+      issue: (state.issueYear && state.issueNumber) ? {
+        year: Number(state.issueYear),
+        number: Number(state.issueNumber)
+      } : undefined,
       attachments
     })
 
@@ -252,6 +258,39 @@ const onSubmit = async () => {
           size="md"
         />
       </UFormField>
+    </div>
+
+    <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+      <h3 class="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">
+        Issue
+      </h3>
+      <div class="flex items-center gap-4">
+        <UFormField
+          label="Number"
+          name="issueNumber"
+          class="flex-1"
+        >
+          <UInput
+            v-model="state.issueNumber"
+            type="number"
+            placeholder="No."
+            size="md"
+          />
+        </UFormField>
+        <div class="pt-6 text-xl text-slate-400 font-light">/</div>
+        <UFormField
+          label="Year"
+          name="issueYear"
+          class="flex-1"
+        >
+          <UInput
+            v-model="state.issueYear"
+            type="number"
+            placeholder="YY"
+            size="md"
+          />
+        </UFormField>
+      </div>
     </div>
 
     <div class="flex justify-end gap-3 pt-6">
