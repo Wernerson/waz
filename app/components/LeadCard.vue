@@ -7,8 +7,6 @@ const props = defineProps<{
   existingIssues?: { year: number, number: number }[]
 }>()
 
-const emit = defineEmits(["updateIssue"])
-
 const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
 
 const items = computed(() => {

@@ -31,7 +31,7 @@ const onAdd = (e: any, section: Section) => {
   }
 }
 
-const dragTarget = ref<string | null>(null)
+
 
 const existingIssues = computed(() => {
   const leadsData = leads.value
@@ -186,11 +186,13 @@ const groupedSections = computed<Section[]>(() => {
           @add="onAdd($event, section)"
         >
           <template #item="{ element: lead }">
-            <div :data-lead-id="lead._id">
+            <div
+              :data-lead-id="lead._id"
+              @click="openLead(lead)"
+            >
               <LeadCard
                 :lead="lead"
                 :existing-issues="existingIssues"
-                @click="openLead(lead)"
               />
             </div>
           </template>
