@@ -3,7 +3,8 @@ import { v } from "convex/values"
 
 export const list = query({
   handler: async (ctx) => {
-    return await ctx.db.query("leads").collect()
+    const all = await ctx.db.query("leads").collect()
+    return all.filter(l => !l.state || l.state === "New" || l.state === "Accepted")
   }
 })
 
@@ -49,6 +50,7 @@ export const createLead = mutation({
       description: args.description,
       owner: args.owner,
       category: args.category,
+      state: "New",
       attachments: args.attachments ?? [],
       issue: args.issue
     })
@@ -152,5 +154,15 @@ export const updateIssue = mutation({
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.id, { issue: args.issue })
+  }
+})
+
+export const updateState = mutation({
+  args: {
+    id: v.id("leads"),
+    state: v.union(v.literal("New"), v.literal("Accepted"), v.literal("Deleted"))
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, { state: args.state })
   }
 })

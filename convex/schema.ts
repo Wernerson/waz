@@ -7,6 +7,7 @@ export default defineSchema({
     description: v.optional(v.string()),
     owner: v.optional(v.string()),
     category: v.optional(v.string()),
+    state: v.optional(v.union(v.literal("New"), v.literal("Accepted"), v.literal("Deleted"))),
     issue: v.optional(v.object({
       year: v.number(),
       number: v.number()
