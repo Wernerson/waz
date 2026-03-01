@@ -25,7 +25,7 @@ const openLead = (lead: Doc<"leads">) => {
 const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
 
 const onAdd = (e: any, section: Section) => {
-  const leadId = e.item.getAttribute('data-lead-id')
+  const leadId = e.item.getAttribute("data-lead-id")
   if (leadId) {
     updateIssue({ id: leadId, issue: section.issue })
   }
@@ -105,9 +105,6 @@ const groupedSections = computed<Section[]>(() => {
         <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
           Leads
         </h1>
-        <p class="text-slate-500 dark:text-slate-400 mt-1">
-          Browse and manage your leads by issue.
-        </p>
       </div>
       <UButton
         icon="i-lucide-plus"
