@@ -31,8 +31,6 @@ const onAdd = (e: any, section: Section) => {
   }
 }
 
-
-
 const existingIssues = computed(() => {
   const leadsData = leads.value
   if (!leadsData) return []
