@@ -17,7 +17,7 @@ jobs:
         run: bun install
 
       - name: Generate Convex files
-        run: npx convex dev --once
+        run: bunx convex dev --once
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
