@@ -16,10 +16,14 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Generate Convex files
+        run: npx convex dev --once
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+
       - name: Deploy Convex Preview
         id: convex_deploy
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         # This command creates the backend and runs your frontend build
-        run: |
-          bunx convex codegen && bunx convex deploy --cmd "bun run build" --cmd-url-env-var-name VITE_CONVEX_URL
+        run: bunx convex deploy --cmd "bun run build" --cmd-url-env-var-name VITE_CONVEX_URL
