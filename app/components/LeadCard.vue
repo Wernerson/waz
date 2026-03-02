@@ -8,6 +8,9 @@ const props = defineProps<{
 }>()
 
 const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
+const { mutate: updateState } = useConvexMutation(api.leads.updateState)
+
+const isNew = computed(() => props.lead.state === "New")
 
 const items = computed(() => {
   const issueItems = (props.existingIssues || []).map(issue => ({
@@ -29,6 +32,16 @@ const items = computed(() => {
     }]
   ]
 })
+
+const accept = (e: Event) => {
+  e.stopPropagation()
+  updateState({ id: props.lead._id, state: "Accepted" })
+}
+
+const reject = (e: Event) => {
+  e.stopPropagation()
+  updateState({ id: props.lead._id, state: "Deleted" })
+}
 </script>
 
 <template>
@@ -76,6 +89,31 @@ const items = computed(() => {
           <span class="text-[10px] font-mono text-slate-300 dark:text-slate-600 uppercase tracking-tighter">
             {{ lead._id.slice(-6) }}
           </span>
+        </div>
+
+        <div
+          v-if="isNew"
+          class="flex gap-2 mt-1"
+          @click.stop
+        >
+          <UButton
+            size="xs"
+            color="success"
+            variant="soft"
+            icon="i-lucide-check"
+            label="Accept"
+            class="flex-1 justify-center"
+            @click="accept"
+          />
+          <UButton
+            size="xs"
+            color="error"
+            variant="soft"
+            icon="i-lucide-x"
+            label="Reject"
+            class="flex-1 justify-center"
+            @click="reject"
+          />
         </div>
       </div>
     </div>

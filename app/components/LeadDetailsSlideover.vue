@@ -182,6 +182,13 @@ const onFileChange = async (e: Event) => {
               >
                 #{{ fullLead.issue.number }}/{{ fullLead.issue.year }}
               </UBadge>
+              <UBadge
+                :color="fullLead.state === 'Accepted' ? 'success' : 'primary'"
+                variant="subtle"
+                size="md"
+              >
+                {{ fullLead.state }}
+              </UBadge>
             </div>
 
             <div
