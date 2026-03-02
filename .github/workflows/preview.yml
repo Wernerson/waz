@@ -22,4 +22,4 @@ jobs:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         # This command creates the backend and runs your frontend build
         run: |
-          bunx convex deploy --cmd "bun run build" --cmd-url-env-var-name VITE_CONVEX_URL
+          bunx convex codegen && bunx convex deploy --cmd "bun run build" --cmd-url-env-var-name VITE_CONVEX_URL
