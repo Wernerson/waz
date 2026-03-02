@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev --dotenv .env.local",
+    "dev:convex": "convex dev",
+    "dev:nuxt": "nuxt dev --dotenv .env.local",
+    "dev": "bun run --parallel dev:convex dev:nuxt",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
