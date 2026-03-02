@@ -187,7 +187,7 @@ const onFileChange = async (e: Event) => {
                 variant="subtle"
                 size="md"
               >
-                {{ fullLead.state || 'New' }}
+                {{ fullLead.state }}
               </UBadge>
             </div>
 

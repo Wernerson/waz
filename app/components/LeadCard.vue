@@ -10,7 +10,7 @@ const props = defineProps<{
 const { mutate: updateIssue } = useConvexMutation(api.leads.updateIssue)
 const { mutate: updateState } = useConvexMutation(api.leads.updateState)
 
-const isNew = computed(() => !props.lead.state || props.lead.state === "New")
+const isNew = computed(() => props.lead.state === "New")
 
 const items = computed(() => {
   const issueItems = (props.existingIssues || []).map(issue => ({

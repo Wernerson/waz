@@ -52,7 +52,7 @@ const existingIssues = computed(() => {
 const newLeads = computed<Doc<"leads">[]>(() => {
   const leadsData = leads.value
   if (!leadsData) return []
-  return leadsData.filter(l => !l.state || l.state === "New")
+  return leadsData.filter(l => l.state === "New")
 })
 
 const groupedSections = computed<Section[]>(() => {
@@ -81,11 +81,11 @@ const groupedSections = computed<Section[]>(() => {
     issueMap.get(key)!.leads.push(l)
   })
 
-  // Sort issue sections descending (newest first)
+  // Sort issue sections ascending (lowest year + number first)
   sections.sort((a, b) => {
     if (!a.issue || !b.issue) return 0
-    if (a.issue.year !== b.issue.year) return b.issue.year - a.issue.year
-    return b.issue.number - a.issue.number
+    if (a.issue.year !== b.issue.year) return a.issue.year - b.issue.year
+    return a.issue.number - b.issue.number
   })
 
   // Idea pool: Accepted leads without an issue

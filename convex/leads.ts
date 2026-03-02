@@ -4,7 +4,7 @@ import { v } from "convex/values"
 export const list = query({
   handler: async (ctx) => {
     const all = await ctx.db.query("leads").collect()
-    return all.filter(l => !l.state || l.state === "New" || l.state === "Accepted")
+    return all.filter(l => l.state === "New" || l.state === "Accepted")
   }
 })
 
