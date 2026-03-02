@@ -32,9 +32,28 @@ jobs:
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
-      - name: Comment deployment URL on PR
+      - name: Build Nuxt app
+        run: bun run build
+        env:
+          NITRO_PRESET: cloudflare-pages
+          CONVEX_URL: ${{ steps.convex_deploy.outputs.deployment_url }}
+
+      - name: Deploy to Cloudflare Pages
+        id: cf_deploy
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: waz
+          directory: .output
+          branch: pr-${{ github.event.number }}
+
+      - name: Comment deployment URLs on PR
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           message: |
-            ### 🚀 Convex Preview Deployment
-            **URL:** ${{ steps.convex_deploy.outputs.deployment_url }}
+            ### 🚀 Preview Deployment
+            | Service | URL |
+            | --- | --- |
+            | 🔧 Convex | ${{ steps.convex_deploy.outputs.deployment_url }} |
+            | 🌐 App | ${{ steps.cf_deploy.outputs.alias }} |
