@@ -144,7 +144,7 @@ const hasAnyLeads = computed(() => (newLeads.value.length > 0) || (groupedSectio
         No leads found
       </h2>
       <p class="text-slate-500 mb-6">
-        Start by creating your first lead for a specific issue or a general one.
+        Start by creating your first lead.
       </p>
       <UButton
         icon="i-lucide-plus"
