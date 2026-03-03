@@ -33,20 +33,17 @@ jobs:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
       - name: Build Nuxt app
-        run: bun run build
+        run: bun run build:cloudflare
         env:
-          NITRO_PRESET: cloudflare-pages
           CONVEX_URL: ${{ steps.convex_deploy.outputs.deployment_url }}
 
       - name: Deploy to Cloudflare Pages
         id: cf_deploy
-        uses: cloudflare/pages-action@v1
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: waz-zh
-          directory: dist
-          branch: pr-${{ github.event.number }}
+          command: pages deploy dist --project-name=waz-zh
 
       - name: Comment deployment URLs on PR
         uses: marocchino/sticky-pull-request-comment@v2
@@ -56,4 +53,4 @@ jobs:
             | Service | URL |
             | --- | --- |
             | 🔧 Convex | ${{ steps.convex_deploy.outputs.deployment_url }} |
-            | 🌐 App | ${{ steps.cf_deploy.outputs.alias }} |
+            | 🌐 App | ${{ steps.cf_deploy.outputs.deployment-url }} |
