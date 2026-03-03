@@ -6,6 +6,8 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -16,14 +18,39 @@ jobs:
       - name: Install dependencies
         run: bun install
 
-      - name: Generate Convex files
-        run: bunx convex dev --once
+      - name: Deploy Convex Preview
+        id: convex_deploy
+        run: |
+          output=$(bunx convex deploy --preview-create pr-${{ github.event.number }} 2>&1)
+          echo "$output"
+          url=$(echo "$output" | grep -oE 'https://[a-z0-9.-]+\.convex\.cloud' | head -1 | sed 's|/$||')
+          if [ -z "$url" ]; then
+            echo "::error::Could not extract Convex deployment URL from output"
+            exit 1
+          fi
+          echo "deployment_url=$url" >> "$GITHUB_OUTPUT"
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
 
-      - name: Deploy Convex Preview
-        id: convex_deploy
+      - name: Build Nuxt app
+        run: bun run build:cloudflare
         env:
-          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
-        # This command creates the backend and runs your frontend build
-        run: bunx convex deploy --cmd "bun run build" --cmd-url-env-var-name VITE_CONVEX_URL
+          CONVEX_URL: ${{ steps.convex_deploy.outputs.deployment_url }}
+
+      - name: Deploy to Cloudflare Pages
+        id: cf_deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=waz-zh
+
+      - name: Comment deployment URLs on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          message: |
+            ### 🚀 Preview Deployment
+            | Service | URL |
+            | --- | --- |
+            | 🔧 Convex | ${{ steps.convex_deploy.outputs.deployment_url }} |
+            | 🌐 App | ${{ steps.cf_deploy.outputs.deployment-url }} |
