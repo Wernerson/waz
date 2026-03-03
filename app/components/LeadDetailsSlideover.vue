@@ -56,6 +56,14 @@ const startEditing = (field: string, value: any) => {
 
 const isSavingField = ref(false)
 
+const saveIssueOnBlur = (event: FocusEvent) => {
+  const container = event.currentTarget as HTMLElement
+  if (container && container.contains(event.relatedTarget as Node)) {
+    return
+  }
+  saveField()
+}
+
 const saveField = async () => {
   if (!editingField.value || !fullLead.value || isSavingField.value) return
 
@@ -312,6 +320,7 @@ const onFileChange = async (e: Event) => {
               <div
                 v-if="editingField === 'issue'"
                 class="flex items-center gap-1"
+                @focusout="saveIssueOnBlur"
               >
                 <UInput
                   v-model="tempIssueNumber"
@@ -319,7 +328,7 @@ const onFileChange = async (e: Event) => {
                   placeholder="No."
                   class="w-12"
                   size="xs"
-                  @blur="saveField"
+                  autofocus
                   @keydown.enter="saveField"
                 />
                 <span class="text-slate-400">/</span>
@@ -329,7 +338,6 @@ const onFileChange = async (e: Event) => {
                   placeholder="YYYY"
                   class="w-16"
                   size="xs"
-                  @blur="saveField"
                   @keydown.enter="saveField"
                 />
               </div>
