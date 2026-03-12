@@ -21,7 +21,7 @@ jobs:
       - name: Deploy Convex Preview
         id: convex_deploy
         run: |
-          output=$(bunx convex deploy --preview-create pr-${{ github.event.number }} 2>&1)
+          output=$(bunx convex deploy --preview-create pr-${{ github.event.number }} --run seed:seed 2>&1)
           echo "$output"
           url=$(echo "$output" | grep -oE 'https://[a-z0-9.-]+\.convex\.cloud' | head -1 | sed 's|/$||')
           if [ -z "$url" ]; then
