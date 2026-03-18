@@ -166,3 +166,13 @@ export const updateState = mutation({
     await ctx.db.patch(args.id, { state: args.state })
   }
 })
+
+export const listCategories = query({
+  handler: async (ctx) => {
+    const leads = await ctx.db.query("leads").collect()
+    const categories = leads
+      .filter(l => l.state !== "Deleted" && l.category)
+      .map(l => l.category as string)
+    return [...new Set(categories)]
+  }
+})
