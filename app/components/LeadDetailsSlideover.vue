@@ -34,8 +34,11 @@ const tempIssueNumber = ref<number | undefined>(undefined)
 const fixedCategories = ["Grüezi", "Rückblick", "Serie"]
 const customItems = ref<string[]>([])
 
+const { data: dbCategories } = useConvexQuery(api.leads.listCategories, {})
+
 const categoryItems = computed(() => {
-  return [...fixedCategories, ...customItems.value]
+  const fromDb = (dbCategories.value ?? []).filter(c => !fixedCategories.includes(c))
+  return [...fixedCategories, ...fromDb, ...customItems.value]
 })
 
 const onCreateCategory = (item: string) => {

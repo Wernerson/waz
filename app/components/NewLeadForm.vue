@@ -24,8 +24,11 @@ const selectedFiles = ref<SelectedFile[]>([])
 const fixedCategories = ["Grüezi", "Rückblick", "Serie"]
 const items = ref<string[]>([])
 
+const { data: dbCategories } = useConvexQuery(api.leads.listCategories, {})
+
 const categoryItems = computed(() => {
-  return [...fixedCategories, ...items.value]
+  const fromDb = (dbCategories.value ?? []).filter(c => !fixedCategories.includes(c))
+  return [...fixedCategories, ...fromDb, ...items.value]
 })
 
 const onCreateCategory = (item: string) => {
