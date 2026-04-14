@@ -1,6 +1,4 @@
-import { useState } from '#imports'
-
-
+import { useState } from "#imports"
 
 export interface PageRow {
   id: string
@@ -30,7 +28,7 @@ export const createDefaultPages = (count: number = 16): IssuePage[] => {
 }
 
 export const useMagazineIssues = () => {
-  const issues = useState<Issue[]>('magazine-issues', () => [])
+  const issues = useState<Issue[]>("magazine-issues", () => [])
 
   const addIssue = (year: number, number: number, releaseDate: string) => {
     const id = `${number}-${year}`

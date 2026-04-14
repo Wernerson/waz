@@ -26,7 +26,7 @@ export const isSeeded = internalQuery({
   handler: async (ctx) => {
     const lead = await ctx.db.query("leads").first()
     return lead !== null
-  },
+  }
 })
 
 export const insertLeads = internalMutation({
@@ -34,7 +34,7 @@ export const insertLeads = internalMutation({
     pdfStorageId: v.id("_storage"),
     pdfSize: v.number(),
     pngStorageId: v.id("_storage"),
-    pngSize: v.number(),
+    pngSize: v.number()
   },
   handler: async (ctx, { pdfStorageId, pdfSize, pngStorageId, pngSize }) => {
     // Lead 1: A new lead (New, with PDF attachment)
@@ -42,7 +42,7 @@ export const insertLeads = internalMutation({
       title: "A new lead",
       description: "This is a new lead...",
       state: "New",
-      attachments: [{ storageId: pdfStorageId, name: "attachment.pdf", contentType: "application/pdf", size: pdfSize }],
+      attachments: [{ storageId: pdfStorageId, name: "attachment.pdf", contentType: "application/pdf", size: pdfSize }]
     })
 
     // Lead 2: Another new lead (New, owner: mst, category: Grüezi, issue: 3/26, two comments)
@@ -52,7 +52,7 @@ export const insertLeads = internalMutation({
       owner: "mst",
       category: "Grüezi",
       state: "New",
-      issue: { number: 3, year: 26 },
+      issue: { number: 3, year: 26 }
     })
     await ctx.db.insert("comments", { leadId: lead2Id, author: "mst", text: "This is a comment about the new lead." })
     await ctx.db.insert("comments", { leadId: lead2Id, author: "mst", text: "This is another comment about the new lead." })
@@ -64,7 +64,7 @@ export const insertLeads = internalMutation({
       owner: "jsb",
       state: "Accepted",
       issue: { number: 4, year: 26 },
-      attachments: [{ storageId: pngStorageId, name: "attachment.png", contentType: "image/png", size: pngSize }],
+      attachments: [{ storageId: pngStorageId, name: "attachment.png", contentType: "image/png", size: pngSize }]
     })
     await ctx.db.insert("comments", { leadId: lead3Id, author: "jsb", text: "This is a comment." })
     await ctx.db.insert("comments", { leadId: lead3Id, author: "jsb", text: "This is another comment." })
@@ -74,7 +74,7 @@ export const insertLeads = internalMutation({
       title: "An idea pool lead",
       description: "This lead is in the idea pool...",
       category: "Rückblick",
-      state: "Accepted",
+      state: "Accepted"
     })
 
     // Lead 5: Already has issue (Accepted, issue: 3/26)
@@ -82,9 +82,9 @@ export const insertLeads = internalMutation({
       title: "Already has issue",
       description: "This lead already has an issue...",
       state: "Accepted",
-      issue: { number: 3, year: 26 },
+      issue: { number: 3, year: 26 }
     })
-  },
+  }
 })
 
 export const seed = internalAction({
@@ -98,7 +98,7 @@ export const seed = internalAction({
     const pdfResponse = await fetch(pdfUploadUrl, {
       method: "POST",
       headers: { "Content-Type": "application/pdf" },
-      body: pdfBytes,
+      body: pdfBytes
     })
     const { storageId: pdfStorageId } = await pdfResponse.json() as { storageId: Id<"_storage"> }
 
@@ -108,7 +108,7 @@ export const seed = internalAction({
     const pngResponse = await fetch(pngUploadUrl, {
       method: "POST",
       headers: { "Content-Type": "image/png" },
-      body: pngBytes,
+      body: pngBytes
     })
     const { storageId: pngStorageId } = await pngResponse.json() as { storageId: Id<"_storage"> }
 
@@ -116,7 +116,7 @@ export const seed = internalAction({
       pdfStorageId,
       pdfSize: pdfBytes.length,
       pngStorageId,
-      pngSize: pngBytes.length,
+      pngSize: pngBytes.length
     })
-  },
+  }
 })
