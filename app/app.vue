@@ -49,7 +49,7 @@ const onModalClose = () => {
         </NuxtLink>
 
         <UNavigationMenu
-          :items="[{ label: 'Leads', to: '/leads' }]"
+          :items="[{ label: 'Leads', to: '/leads' }, { label: 'Issues', to: '/issues' }]"
           variant="ghost"
         />
       </template>
