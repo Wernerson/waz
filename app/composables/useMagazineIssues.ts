@@ -7,6 +7,7 @@ export interface PageRow {
 
 export interface IssuePage {
   pageNumber: number
+  title?: string
   rows: PageRow[]
 }
 
@@ -23,6 +24,7 @@ export const generateRowId = () => Math.random().toString(36).substring(2, 9)
 export const createDefaultPages = (count: number = 16): IssuePage[] => {
   return Array.from({ length: count }, (_, i) => ({
     pageNumber: i + 1,
+    title: "",
     rows: [{ id: generateRowId(), items: [] }]
   }))
 }

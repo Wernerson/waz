@@ -172,6 +172,24 @@ const onDeleteItem = (row: any) => {
 const hasAssignments = (page: any) => {
   return page.rows.some((r: any) => r.items.length > 0)
 }
+
+const editingPageNumber = ref<number | null>(null)
+
+const startEditingTitle = (pageNumber: number) => {
+  editingPageNumber.value = pageNumber
+}
+
+const finishEditingTitle = () => {
+  editingPageNumber.value = null
+}
+
+const onTitleKeydown = (evt: KeyboardEvent) => {
+  if (evt.key === "Enter") {
+    finishEditingTitle()
+  } else if (evt.key === "Escape") {
+    finishEditingTitle()
+  }
+}
 </script>
 
 <template>
@@ -311,9 +329,33 @@ const hasAssignments = (page: any) => {
             ]"
           >
             <div class="absolute top-0 left-0 w-full h-10 flex items-center px-4 justify-between border-b border-slate-100 dark:border-slate-800 backdrop-blur-sm bg-white/50 dark:bg-slate-900/50 rounded-t-2xl">
-              <span class="font-bold text-slate-700 dark:text-slate-300 font-mono tracking-wider">Pg {{ page.pageNumber }}</span>
+              <!-- Editable Page Header (Left) -->
+              <div
+                v-if="editingPageNumber === page.pageNumber"
+                class="w-full flex items-center gap-1 whitespace-nowrap"
+              >
+                <span class="flex-none font-bold text-slate-700 dark:text-slate-300 font-mono tracking-wider">Seite {{ page.pageNumber }}</span>
+                <input
+                  v-model="page.title"
+                  type="text"
+                  maxlength="20"
+                  placeholder="Title"
+                  class="w-20 text-xs flex-1 border border-primary-500 dark:border-primary-400 rounded-lg py-0.5 px-1 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-primary-500"
+                  @blur="finishEditingTitle"
+                  @keydown="onTitleKeydown"
+                  autofocus
+                />
+              </div>
+              <div
+                v-else
+                class="w-full flex items-center gap-1 whitespace-nowrap text-slate-700 dark:text-slate-300 font-mono tracking-wider"
+                @click="startEditingTitle(page.pageNumber)"
+              >
+                <span class="font-bold">Seite {{ page.pageNumber }}</span>
+                <span v-if="page.title?.trim()">({{ page.title.trim() }})</span>
+              </div>
 
-              <div class="opacity-0 group-hover:opacity-100 transition-opacity z-10 w-24">
+              <div class="absolute right-0 mr-2 pr-2 opacity-0 group-hover:opacity-100 transition-opacity z-10 w-20">
                 <!-- We manually ensure the selector visually reverts on cancel by binding value to length, though simple select might need forced update -->
                 <select
                   class="w-full text-xs font-semibold border border-slate-300 dark:border-slate-600 rounded-lg py-1 px-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 focus:outline-none cursor-pointer"
