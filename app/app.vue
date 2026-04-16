@@ -22,6 +22,9 @@ useSeoMeta({
 })
 
 const { isOpen, close } = useNewLeadModal()
+const { $authClient } = useNuxtApp()
+const authSession = $authClient.useSession()
+const authPending = ref(false)
 
 const onModalSuccess = () => {
   close()
@@ -34,6 +37,27 @@ const onModalSuccess = () => {
 
 const onModalClose = () => {
   close()
+}
+
+const signInTestUser = async () => {
+  authPending.value = true
+  try {
+    await $authClient.signIn.email({
+      email: "test@example.com",
+      password: "test"
+    })
+  } finally {
+    authPending.value = false
+  }
+}
+
+const signOut = async () => {
+  authPending.value = true
+  try {
+    await $authClient.signOut()
+  } finally {
+    authPending.value = false
+  }
 }
 </script>
 
@@ -76,6 +100,23 @@ const onModalClose = () => {
             </div>
           </template>
         </UModal>
+
+        <UButton
+          v-if="!authSession.data?.user"
+          label="Sign in test user"
+          color="neutral"
+          variant="soft"
+          :loading="authPending"
+          @click="signInTestUser"
+        />
+        <UButton
+          v-else
+          :label="`Sign out ${authSession.data.user.email}`"
+          color="neutral"
+          variant="soft"
+          :loading="authPending"
+          @click="signOut"
+        />
 
         <UColorModeButton />
       </template>

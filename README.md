@@ -35,6 +35,32 @@ Make sure to install the dependencies:
 pnpm install
 ```
 
+### Convex Better Auth setup
+
+Install command:
+
+```bash
+bun add @convex-dev/better-auth
+```
+
+Documentation:
+
+- https://www.convex.dev/components/better-auth/better-auth.md
+- https://www.convex.dev/components/better-auth/llms.txt
+- https://better-auth.com/docs/basic-usage
+- https://labs.convex.dev/better-auth/basic-usage
+
+Required environment variables:
+
+- `CONVEX_URL` (already required by `convex-nuxt`, used by the Nuxt Better Auth client)
+- `CONVEX_SITE_URL` (Convex deployment URL used for Better Auth issuer/base URL)
+- `BETTER_AUTH_SECRET` (Better Auth signing/encryption secret)
+- `NUXT_PUBLIC_APP_URL` (frontend origin to trust for auth requests, e.g. `http://localhost:3000`)
+
+Optional:
+
+- `JWKS` (static Better Auth JWK set; if omitted, JWKS are served dynamically)
+
 ## Development Server
 
 Start the development server on `http://localhost:3000`:
