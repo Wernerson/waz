@@ -2,6 +2,7 @@ import { internalAction, internalMutation, internalQuery } from "./_generated/se
 import { internal } from "./_generated/api"
 import { v } from "convex/values"
 import type { Id } from "./_generated/dataModel"
+import { createAuth } from "./auth"
 
 // Minimal valid single-page PDF
 const MINIMAL_PDF = `%PDF-1.4
@@ -89,6 +90,19 @@ export const insertLeads = internalMutation({
 
 export const seed = internalAction({
   handler: async (ctx) => {
+    const auth = createAuth(ctx)
+    try {
+      await auth.api.signUpEmail({
+        body: {
+          email: "test@example.com",
+          password: "test",
+          name: "Test User"
+        }
+      })
+    } catch {
+      // Ignore if the test user already exists
+    }
+
     const alreadySeeded = await ctx.runQuery(internal.seed.isSeeded)
     if (alreadySeeded) return
 

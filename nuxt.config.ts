@@ -9,6 +9,11 @@ export default defineNuxtConfig({
   },
 
   css: ["~/assets/css/main.css"],
+  runtimeConfig: {
+    public: {
+      convexUrl: process.env.CONVEX_URL
+    }
+  },
 
   future: {
     compatibilityVersion: 4
