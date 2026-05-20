@@ -3,15 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "bun run --parallel dev:convex dev:nuxt",
+    "dev": "bun run --parallel dev:convex dev:next",
     "dev:convex": "convex dev --run seed:seed",
-    "dev:nuxt": "next dev",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "prepare": "husky"
   },
   "dependencies": {
+    "@auth/core": "0.37.0",
+    "@convex-dev/auth": "^0.0.92",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "convex": "^1.39.1",
