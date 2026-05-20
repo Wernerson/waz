@@ -1,7 +1,7 @@
-import { internalAction, internalMutation, internalQuery } from "./_generated/server"
-import { internal } from "./_generated/api"
-import { v } from "convex/values"
-import type { Id } from "./_generated/dataModel"
+import {internalAction, internalQuery} from "./_generated/server"
+import {internal} from "./_generated/api"
+import type {Id} from "./_generated/dataModel"
+import {createAccount} from "@convex-dev/auth/server"
 
 // Minimal valid single-page PDF
 const MINIMAL_PDF = `%PDF-1.4
@@ -22,36 +22,53 @@ startxref
 // Minimal valid 1×1 transparent PNG (base64-encoded)
 const MINIMAL_PNG_BASE64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=="
 
-export const isSeeded = internalQuery({
+export const testUserAdded = internalQuery({
     handler: async (ctx) => {
-        return false // todo change
+        const userAdded = await ctx.db
+            .query("users")
+            .filter(q => q.eq("email", "test@example.com"))
+            .unique()
+        return userAdded != null
+    }
+})
+
+export const insertTestUser = internalAction({
+    handler: async (ctx) => {
+        const alreadyRun = await ctx.runQuery(internal.seed.testUserAdded)
+        if (alreadyRun) return
+        await createAccount(ctx, {
+            provider: "password",
+            account: {id: "test@example.com", secret: "test"},
+            profile: {name: "Test User"}
+        })
     }
 })
 
 export const seed = internalAction({
     handler: async (ctx) => {
-        const alreadySeeded = await ctx.runQuery(internal.seed.isSeeded)
-        if (alreadySeeded) return
+
+        // add users
+        await ctx.runAction(internal.seed.insertTestUser)
 
         // Upload a minimal placeholder PDF
-        const pdfUploadUrl = await ctx.storage.generateUploadUrl()
-        const pdfBytes = new TextEncoder().encode(MINIMAL_PDF)
-        const pdfResponse = await fetch(pdfUploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/pdf" },
-            body: pdfBytes
-        })
-        const { storageId: pdfStorageId } = await pdfResponse.json() as { storageId: Id<"_storage"> }
-
-        // Upload a minimal placeholder PNG
-        const pngUploadUrl = await ctx.storage.generateUploadUrl()
-        const pngBytes = Uint8Array.from(atob(MINIMAL_PNG_BASE64), c => c.charCodeAt(0))
-        const pngResponse = await fetch(pngUploadUrl, {
-            method: "POST",
-            headers: { "Content-Type": "image/png" },
-            body: pngBytes
-        })
-        const { storageId: pngStorageId } = await pngResponse.json() as { storageId: Id<"_storage"> }
+        // const pdfUploadUrl = await ctx.storage.generateUploadUrl()
+        // const pdfBytes = new TextEncoder().encode(MINIMAL_PDF)
+        // const pdfResponse = await fetch(pdfUploadUrl, {
+        //     method: "POST",
+        //     headers: {"Content-Type": "application/pdf"},
+        //     body: pdfBytes
+        // })
+        // const {storageId: pdfStorageId} = await pdfResponse.json() as { storageId: Id<"_storage"> }
+        //
+        // // Upload a minimal placeholder PNG
+        // const pngUploadUrl = await ctx.storage.generateUploadUrl()
+        // const pngBytes = Uint8Array.from(atob(MINIMAL_PNG_BASE64), c => c.charCodeAt(0))
+        // const pngResponse = await fetch(pngUploadUrl, {
+        //     method: "POST",
+        //     headers: {"Content-Type": "image/png"},
+        //     body: pngBytes
+        // })
+        // const {storageId: pngStorageId} = await pngResponse.json() as { storageId: Id<"_storage"> }
 
         // await ctx.runMutation(internal.seed.insertLeads, {
         //     pdfStorageId,
