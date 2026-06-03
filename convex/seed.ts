@@ -39,7 +39,7 @@ export const insertTestUser = internalAction({
         await createAccount(ctx, {
             provider: "password",
             account: {id: "test@example.com", secret: "test"},
-            profile: {name: "Test User"}
+            profile: {name: "Test User", tag: "tst"}
         })
     }
 })
