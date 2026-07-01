@@ -3,8 +3,9 @@ import { convexAuthNextjsMiddleware, nextjsMiddlewareRedirect } from "@convex-de
 export const proxy = convexAuthNextjsMiddleware(async (request, { convexAuth }) => {
   const isAuthenticated = await convexAuth.isAuthenticated();
   const pathname = request.nextUrl.pathname;
+  const protectedPaths = new Set(["/", "/leads", "/issues"]);
 
-  if (!isAuthenticated && pathname === "/") {
+  if (!isAuthenticated && protectedPaths.has(pathname)) {
     return nextjsMiddlewareRedirect(request, "/login");
   }
 
@@ -14,5 +15,5 @@ export const proxy = convexAuthNextjsMiddleware(async (request, { convexAuth }) 
 });
 
 export const config = {
-  matcher: ["/", "/login", "/api/auth/:path*"],
+  matcher: ["/", "/leads", "/issues", "/login", "/api/auth/:path*"],
 };
