@@ -10,6 +10,17 @@ export const generateUploadUrl = mutation({
   },
 });
 
+export const deleteAttachment = mutation({
+  args: {
+    storageId: v.id("_storage"),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    await ctx.storage.delete(args.storageId);
+  },
+});
+
 export const create = mutation({
   args: {
     title: v.string(),

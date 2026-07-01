@@ -30,6 +30,7 @@ export function NewLeadForm({
 }) {
   const createLead = useMutation(api.leads.create);
   const generateUploadUrl = useMutation(api.leads.generateUploadUrl);
+  const deleteAttachment = useMutation(api.leads.deleteAttachment);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -92,6 +93,16 @@ export function NewLeadForm({
       if (target?.previewUrl) URL.revokeObjectURL(target.previewUrl);
       return prev.filter((attachment) => attachment.storageId !== storageId);
     });
+    void deleteAttachment({ storageId });
+  };
+
+  const onCancelClick = () => {
+    for (const attachment of attachments) {
+      if (attachment.previewUrl) URL.revokeObjectURL(attachment.previewUrl);
+      void deleteAttachment({ storageId: attachment.storageId });
+    }
+    setAttachments([]);
+    onCancel();
   };
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -249,7 +260,7 @@ export function NewLeadForm({
       {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
       <div className="flex justify-end gap-2">
-        <Button type="button" variant="outline" onClick={onCancel} disabled={isSubmitting}>
+        <Button type="button" variant="outline" onClick={onCancelClick} disabled={isSubmitting}>
           Cancel
         </Button>
         <Button type="submit" disabled={isSubmitting || isUploading}>
