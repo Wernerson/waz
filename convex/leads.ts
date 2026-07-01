@@ -37,6 +37,21 @@ export const list = query({
   },
 });
 
+export const assignIssue = mutation({
+  args: {
+    leadId: v.id("leads"),
+    plannedIssue: v.object({
+      year: v.number(),
+      number: v.number(),
+    }),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    await ctx.db.patch(args.leadId, { plannedIssue: args.plannedIssue });
+  },
+});
+
 export const generateUploadUrl = mutation({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
