@@ -25,8 +25,9 @@ export default defineSchema({
         storageId: v.id("_storage"),
         name: v.string(),
         contentType: v.string(),
-        size: v.number()
-    }),
+        size: v.number(),
+        leadId: v.optional(v.id("leads"))
+    }).index("leadId", ["leadId"]),
     leads: defineTable({
         title: v.string(),
         description: v.optional(v.string()),

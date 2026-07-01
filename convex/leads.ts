@@ -1,6 +1,14 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { mutation } from "./_generated/server";
+
+export const generateUploadUrl = mutation({
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+    return await ctx.storage.generateUploadUrl();
+  },
+});
 
 export const create = mutation({
   args: {
@@ -13,6 +21,16 @@ export const create = mutation({
         year: v.number(),
         number: v.number(),
       }),
+    ),
+    attachments: v.optional(
+      v.array(
+        v.object({
+          storageId: v.id("_storage"),
+          name: v.string(),
+          contentType: v.string(),
+          size: v.number(),
+        }),
+      ),
     ),
   },
   handler: async (ctx, args) => {
@@ -34,12 +52,18 @@ export const create = mutation({
         : {kind: "Other", name: args.source}
     }
 
-    await ctx.db.insert("leads", {
+    const leadId = await ctx.db.insert("leads", {
       title: args.title,
       description: args.description,
       tag: args.tag,
       plannedIssue: args.plannedIssue,
       source: source,
     });
+
+    for (const attachment of args.attachments ?? []) {
+      await ctx.db.insert("files", { ...attachment, leadId });
+    }
+
+    return leadId;
   },
 });
