@@ -1,11 +1,12 @@
 "use client";
 
-import { type MouseEvent, useEffect, useRef, useState } from "react";
+import { type FormEvent, type MouseEvent, useEffect, useRef, useState } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import type { FunctionReturnType } from "convex/server";
 import { HelpCircle, Mail, Search, User } from "lucide-react";
+import { IssueField, type IssueFieldParts } from "@/components/issueField";
 
 type Lead = FunctionReturnType<typeof api.leads.list>[number];
 type PlannedIssue = NonNullable<Lead["plannedIssue"]>;
@@ -120,7 +121,30 @@ function IssueMenu({
           </button>
         ))
       )}
+
+      <NewIssueOption onSelect={onSelect} />
     </div>
+  );
+}
+
+function NewIssueOption({ onSelect }: { onSelect: (issue: PlannedIssue) => void }) {
+  const [parts, setParts] = useState<IssueFieldParts>({ number: "", year: "" });
+
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!parts.number || !parts.year) return;
+    onSelect({ number: Number(parts.number), year: Number(parts.year) });
+  };
+
+  return (
+    <form onSubmit={onSubmit} className="border-t border-zinc-200 p-1 dark:border-zinc-800">
+      <p className="px-1 pb-1 text-xs text-zinc-500 dark:text-zinc-400">New issue</p>
+      <IssueField
+        aria-label="New issue"
+        onValueChange={(_, nextParts) => setParts(nextParts)}
+        className="h-7"
+      />
+    </form>
   );
 }
 
