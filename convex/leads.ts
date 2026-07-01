@@ -1,6 +1,41 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
+
+export const list = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    const leads = await ctx.db.query("leads").collect();
+
+    const withResolvedSource = await Promise.all(
+      leads.map(async (lead) => {
+        if (lead.source?.kind !== "User") return lead;
+        const user = await ctx.db.get(lead.source.userId);
+        return {
+          ...lead,
+          source: {
+            kind: "User" as const,
+            userId: lead.source.userId,
+            label: user?.name ?? user?.tag ?? user?.email ?? "User",
+          },
+        };
+      }),
+    );
+
+    return withResolvedSource.sort((a, b) => {
+      const aIssue = a.plannedIssue;
+      const bIssue = b.plannedIssue;
+      if (!aIssue && !bIssue) return 0;
+      if (!aIssue) return -1;
+      if (!bIssue) return 1;
+      if (aIssue.year !== bIssue.year) return aIssue.year - bIssue.year;
+      return aIssue.number - bIssue.number;
+    });
+  },
+});
 
 export const generateUploadUrl = mutation({
   handler: async (ctx) => {
