@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import type { FunctionReturnType } from "convex/server";
-import { HelpCircle, Mail, User } from "lucide-react";
+import { HelpCircle, Mail, Search, User } from "lucide-react";
 
 type Lead = FunctionReturnType<typeof api.leads.list>[number];
 
@@ -41,6 +42,14 @@ function sourceLabel(source: Lead["source"]): string | null {
   return source.label;
 }
 
+function matchesSearch(lead: Lead, query: string): boolean {
+  const haystack = [lead.title, lead.description, lead.tag, sourceLabel(lead.source)]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return haystack.includes(query);
+}
+
 function LeadCard({ lead }: { lead: Lead }) {
   const source = lead.source;
   const label = sourceLabel(source);
@@ -74,18 +83,35 @@ function LeadCard({ lead }: { lead: Lead }) {
 
 export default function LeadsPage() {
   const leads = useQuery(api.leads.list);
+  const [search, setSearch] = useState("");
+
+  const query = search.trim().toLowerCase();
+  const filteredLeads = leads?.filter((lead) => !query || matchesSearch(lead, query));
 
   return (
     <section className="w-full">
       <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">Leads</h1>
 
+      <div className="relative mt-4 max-w-sm">
+        <Search className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-zinc-400" />
+        <input
+          type="text"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          placeholder="Search leads…"
+          className="h-8 w-full border border-zinc-300 bg-white pr-2 pl-8 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-100 dark:focus:border-zinc-500"
+        />
+      </div>
+
       {leads === undefined ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">Loading…</p>
       ) : leads.length === 0 ? (
         <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">No leads yet.</p>
+      ) : filteredLeads && filteredLeads.length === 0 ? (
+        <p className="mt-4 text-sm text-zinc-600 dark:text-zinc-400">No leads match your search.</p>
       ) : (
         <div className="mt-4 space-y-8">
-          {groupByIssue(leads).map((group) => (
+          {groupByIssue(filteredLeads ?? []).map((group) => (
             <section key={group.key}>
               <h2 className="border-b border-zinc-200 pb-2 text-sm font-semibold text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 {group.label}
