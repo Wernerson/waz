@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { NewMenuButton } from "../NewMenuButton";
 import { SignOutButton } from "../SignOutButton";
 
 export default function AppLayout({
@@ -30,7 +31,10 @@ export default function AppLayout({
               </Link>
             </nav>
           </div>
-          <SignOutButton />
+          <div className="flex items-start gap-2">
+            <NewMenuButton />
+            <SignOutButton />
+          </div>
         </div>
       </header>
       <main className="mx-auto flex w-full max-w-5xl flex-1 px-4 py-8">{children}</main>
