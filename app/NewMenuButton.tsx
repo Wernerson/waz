@@ -2,6 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { NewLeadForm } from "@/app/NewLeadForm";
+
+const buttonClass = "block w-full text-left px-2 py-1 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
 
 export function NewMenuButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,7 +58,7 @@ export function NewMenuButton() {
           <button
             type="button"
             role="menuitem"
-            className="block px-2 py-1 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+            className={buttonClass}
             onClick={() => {
               setIsOpen(false);
               setActiveDialog("lead");
@@ -66,7 +69,7 @@ export function NewMenuButton() {
           <button
             type="button"
             role="menuitem"
-            className="block px-2 py-1 text-sm text-zinc-700 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+            className={buttonClass}
             onClick={() => {
               setIsOpen(false);
               setActiveDialog("issue");
@@ -107,16 +110,24 @@ export function NewMenuButton() {
               </Button>
             </div>
 
-            <div className="mt-4 border border-dashed border-zinc-300 p-4 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
-              Form placeholder — the {activeDialog === "lead" ? "lead" : "issue"} form will be added
-              here.
-            </div>
+            {activeDialog === "lead" ? (
+              <NewLeadForm
+                onCancel={() => setActiveDialog(null)}
+                onCreated={() => setActiveDialog(null)}
+              />
+            ) : (
+              <>
+                <div className="mt-4 border border-dashed border-zinc-300 p-4 text-sm text-zinc-600 dark:border-zinc-700 dark:text-zinc-400">
+                  Form placeholder — the issue form will be added here.
+                </div>
 
-            <div className="mt-4 flex justify-end">
-              <Button type="button" variant="outline" onClick={() => setActiveDialog(null)}>
-                Close
-              </Button>
-            </div>
+                <div className="mt-4 flex justify-end">
+                  <Button type="button" variant="outline" onClick={() => setActiveDialog(null)}>
+                    Close
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       ) : null}

@@ -28,23 +28,26 @@ export default defineSchema({
         size: v.number()
     }),
     leads: defineTable({
-        subject: v.string(),
-        body: v.optional(v.string()),
+        title: v.string(),
+        description: v.optional(v.string()),
         plannedIssue: v.optional(v.object({
             year: v.number(),
             number: v.number()
         })),
         tag: v.optional(v.string()),
         eventDate: v.optional(vDate),
-        source: v.union(
+        source: v.optional(v.union(
             v.object({
                 kind: v.literal("Email"),
                 email: v.string()
             }), v.object({
                 kind: v.literal("User"),
                 userId: v.id("users")
+            }), v.object({
+                kind: v.literal("Other"),
+                name: v.string()
             })
-        )
+        ))
     }),
     leadComments: defineTable({
         leadId: v.id("leads"),
